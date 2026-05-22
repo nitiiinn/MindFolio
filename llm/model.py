@@ -1,10 +1,9 @@
-from langchain_groq import ChatGroq
-
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 def load_llm():
 
-    model = ChatGroq(
-        model_name="llama-3.1-8b-instant",
+    model = ChatGoogleGenerativeAI(
+        model="gemini-3.1-flash-lite",
         temperature=0.5,
     )
 
