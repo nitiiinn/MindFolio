@@ -1,0 +1,24 @@
+# LangChain Core and Integrations
+langchain-core
+langchain-community
+langchain-groq
+langchain-huggingface
+langchain-text-splitters
+
+# Vector Stores
+chromadb
+
+# Document Loaders & Retrievers
+pypdf             # Required for PyPDFLoader
+beautifulsoup4    # Required for WebBaseLoader
+
+# Output Parsers & Data Formatting
+pydantic          # Used for PydanticOutputParser
+
+# Web Interfaces and Environment Loaders
+streamlit
+python-dotenv
+
+# General Utilities
+requests
+reportlab
