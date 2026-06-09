@@ -187,22 +187,8 @@ st.markdown("""
   margin: 0;
  }
 
- /* Hide default streamlit branding & cloud badges */
- #MainMenu {visibility: hidden;}
- footer {visibility: hidden;}
- header [data-testid="stToolbar"] {display: none !important;}
+ /* Hide default streamlit cloud badge */
  [class^="viewerBadge_"] {display: none !important;}
-
- /* Ensure sidebar toggle is always visible */
- [data-testid="collapsedControl"] {
-  display: flex !important;
-  visibility: visible !important;
-  color: #ECECEC !important;
-  background-color: #2F2F2F !important;
-  border-radius: 8px !important;
-  margin: 10px !important;
-  opacity: 1 !important;
- }
 </style>
 """, unsafe_allow_html=True)
 
