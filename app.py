@@ -262,14 +262,14 @@ with st.sidebar:
 
   gen_col1, gen_col2, gen_col3 = st.columns(3)
   with gen_col1:
-   notes_btn = st.button("", use_container_width=True, help="Generate Notes")
-   st.markdown("<p style='text-align:center;color:#9ca3af;font-size:0.7rem;margin-top:-10px;'>Notes</p>", unsafe_allow_html=True)
+   st.image("images/notes.png", use_container_width=True)
+   notes_btn = st.button("Notes", use_container_width=True, help="Generate Notes", key="btn_notes")
   with gen_col2:
-   quiz_btn = st.button("", use_container_width=True, help="Generate MCQ Quiz")
-   st.markdown("<p style='text-align:center;color:#9ca3af;font-size:0.7rem;margin-top:-10px;'>Quiz</p>", unsafe_allow_html=True)
+   st.image("images/quiz.png", use_container_width=True)
+   quiz_btn = st.button("Quiz", use_container_width=True, help="Generate MCQ Quiz", key="btn_quiz")
   with gen_col3:
-   flash_btn = st.button("", use_container_width=True, help="Generate Flashcards")
-   st.markdown("<p style='text-align:center;color:#9ca3af;font-size:0.7rem;margin-top:-10px;'>Cards</p>", unsafe_allow_html=True)
+   st.image("images/cards.png", use_container_width=True)
+   flash_btn = st.button("Cards", use_container_width=True, help="Generate Flashcards", key="btn_cards")
 
  else:
   notes_btn = False
