@@ -197,15 +197,6 @@ st.markdown("""
  #manage-app-button {display: none !important;}
  #viewerBadge {display: none !important;}
 
- /* Sticky Navigation */
- [data-testid="stRadio"] {
-  position: sticky !important;
-  top: 3rem !important;
-  z-index: 999 !important;
-  background-color: var(--background-color) !important;
-  padding-bottom: 10px !important;
-  border-bottom: 1px solid #383838 !important;
- }
 </style>
 """, unsafe_allow_html=True)
 
@@ -239,6 +230,35 @@ st.markdown("""
 
 # ── Sidebar ──────────────────────────────────────────────────────────────────
 with st.sidebar:
+ if st.session_state.processed_files:
+  st.markdown("## Navigation")
+  view_options = {
+   "chat": " Chat",
+   "notes": " Study Notes",
+   "quiz": " MCQ Quiz",
+   "flashcards": " Flashcards"
+  }
+  
+  if st.session_state.active_tab not in view_options:
+   st.session_state.active_tab = "chat"
+   
+  current_idx = list(view_options.keys()).index(st.session_state.active_tab)
+  
+  selected_view = st.radio(
+   "Navigation",
+   options=list(view_options.values()),
+   index=current_idx,
+   label_visibility="collapsed"
+  )
+  st.markdown("---")
+  
+  for key, val in view_options.items():
+   if val == selected_view:
+    if st.session_state.active_tab != key:
+     st.session_state.active_tab = key
+     st.rerun()
+    break
+
  st.markdown("## Document Upload")
  st.markdown("---")
 
@@ -460,36 +480,6 @@ if not st.session_state.processed_files:
  pass
 
 else:
- # ── Top Navigation ──
- view_options = {
-  "chat": " Chat",
-  "notes": " Study Notes",
-  "quiz": " MCQ Quiz",
-  "flashcards": " Flashcards"
- }
- 
- if st.session_state.active_tab not in view_options:
-  st.session_state.active_tab = "chat"
-  
- current_idx = list(view_options.keys()).index(st.session_state.active_tab)
- 
- selected_view = st.radio(
-  "Navigation",
-  options=list(view_options.values()),
-  index=current_idx,
-  horizontal=True,
-  label_visibility="collapsed"
- )
- 
- for key, val in view_options.items():
-  if val == selected_view:
-   if st.session_state.active_tab != key:
-    st.session_state.active_tab = key
-    st.rerun()
-   break
-   
- st.markdown("---")
-
  # ── Main Content Area Views ──
  
  # ════════════════════════════════════════════════════════════════
