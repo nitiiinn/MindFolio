@@ -67,7 +67,7 @@ TASK_MODEL_ROUTES = {
         provider="mistral",
         model_id="ministral-8b-2512",
         temperature=0.3,
-        max_tokens=1200,
+        max_tokens=None,
     ),
 
     # Generates Q&A flashcards from documents
@@ -102,7 +102,7 @@ TASK_MODEL_ROUTES = {
         provider="groq",
         model_id="openai/gpt-oss-120b",
         temperature=0.0,
-        max_tokens=1200,
+        max_tokens=None,
     ),
 
     # Backup model — used when Mistral models fail
