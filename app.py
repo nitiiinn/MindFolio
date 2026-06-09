@@ -541,6 +541,10 @@ else:
      query,
      context,
     )
+    
+    if response.get("is_internet_search"):
+     sources = ["Web Search (Groq Compound)"]
+     
     st.session_state.messages.append(
      {
       "role": "assistant",

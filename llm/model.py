@@ -112,6 +112,14 @@ TASK_MODEL_ROUTES = {
         temperature=0.35,
         max_tokens=8000,
     ),
+
+    # Uses Groq's compound AI to perform web searches when context is missing
+    "internet_search": ModelRoute(
+        provider="groq",
+        model_id="groq/compound",
+        temperature=0.3,
+        max_tokens=None,
+    ),
 }
 
 
@@ -251,6 +259,36 @@ def answer_question(router, prompt, query: str, context: str) -> dict[str, Any]:
     # Step 2: Verify the answer with a separate model
     verification = router.verify_answer(query, context, draft_answer)
     verification["draft_answer"] = draft_answer
+
+    # Step 3: Check if the answer cannot be found in the context
+    ans_lower = draft_answer.lower()
+    cannot_answer = False
+    
+    score = verification.get("hallucination_score")
+    if score is not None and score > 60:
+        cannot_answer = True
+    elif any(phrase in ans_lower for phrase in [
+        "cannot answer", "do not contain", "does not contain",
+        "provided context does not", "not mentioned", "i don't know"
+    ]):
+        cannot_answer = True
+
+    if cannot_answer:
+        # Fallback to internet search
+        search_prompt = f"The user asked: '{query}'. The available documents do not contain the answer. Please search the internet to find a detailed answer, and include examples if applicable."
+        try:
+            internet_answer = router.complete(
+                "internet_search",
+                [{"role": "user", "content": search_prompt}]
+            )
+            verification["answer"] = internet_answer
+            verification["is_internet_search"] = True
+            verification["reason"] = "Answered using Groq Compound internet search because it was not in the documents."
+            verification["hallucination_score"] = 0
+        except Exception as e:
+            # If search fails, we'll just fall back to the draft answer
+            pass
+
     return verification
 
 
