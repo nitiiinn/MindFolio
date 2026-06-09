@@ -535,14 +535,18 @@ else:
     from concurrent.futures import ThreadPoolExecutor
     from llm.prompt import load_history_summarizer_prompt
 
+    # Extract objects from session state to avoid Thread context issues
+    current_retriever = st.session_state.retriever
+    current_router = st.session_state.model_router
+
     def get_docs():
-        return st.session_state.retriever.invoke(query, chat_history=chat_history_str)
+        return current_retriever.invoke(query, chat_history=chat_history_str)
 
     def get_history_summary():
         if chat_history_list and len(chat_history_list) > 0:
             history_str = "\n".join([f"{msg['role'].capitalize()}: {msg['content']}" for msg in chat_history_list[-6:]])
             summarizer_prompt = load_history_summarizer_prompt()
-            return st.session_state.model_router.complete(
+            return current_router.complete(
                 "history_summarization",
                 [{"role": "user", "content": summarizer_prompt.format(chat_history=history_str)}]
             )
