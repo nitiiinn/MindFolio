@@ -7,7 +7,7 @@ An intelligent, AI-powered PDF reader and analyzer that uses Retrieval-Augmented
 - **🧠 Intelligent Q&A (RAG):** Chat with your PDFs. The app uses ChromaDB and embeddings to accurately retrieve information and answer your questions alongside Gemini AI.
 - **📝 Automated Study Materials:** Automatically generate comprehensive study notes and flashcards from your documents.
 - **📊 Report Generation:** Synthesize document information into structured PDF reports (powered by ReportLab).
-- **🎨 Image Generation:** Integrated capabilities to generate images based on document context (using Gemini/Pollination).
+
 
 ## 🗂️ Project Structure
 
@@ -23,7 +23,7 @@ The project follows a clean, modular architecture:
 - **AI Models:** Gemini API, Groq API
 - **Vector Database:** ChromaDB
 - **PDF Generation:** ReportLab
-- **Additional APIs:** Pollination (Image generation)
+
 
 ## 🚀 Getting Started
 
@@ -32,7 +32,7 @@ The project follows a clean, modular architecture:
 1. Python 3.8+
 2. A Gemini API Key
 3. A Groq API Key
-4. (Optional) Pollination API Key
+
 
 ### Installation
 
@@ -61,7 +61,6 @@ The project follows a clean, modular architecture:
    ```env
    GEMINI_API_KEY=your_gemini_api_key_here
    GROQ_API_KEY=your_groq_api_key_here
-   POLLINATION_API_KEY=your_pollination_api_key_here
    ```
 
 ### Running the App
@@ -77,7 +76,7 @@ python app.py
 - **📝 Advanced Notes Generation:** Detailed, structured study notes with customizable detail levels extracted directly from documents.
 - **🗂️ Flashcard Export:** Generate and export flashcards seamlessly for integration with Anki or other spaced repetition software.
 - **📊 Detailed PDF Reports:** Automatic synthesis of large documents into visually appealing, structured PDF reports and summaries (using ReportLab).
-- **🎨 Visual Context Generation:** Enhanced image generation explicitly tied to document concepts to aid visual learners.
+
 
 ## �📄 License
 MIT License
