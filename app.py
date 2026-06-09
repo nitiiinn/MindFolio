@@ -187,9 +187,11 @@ st.markdown("""
   margin: 0;
  }
 
- /* Hide default streamlit branding */
+ /* Hide default streamlit branding & cloud badges */
  #MainMenu {visibility: hidden;}
  footer {visibility: hidden;}
+ header [data-testid="stToolbar"] {display: none !important;}
+ [class^="viewerBadge_"] {display: none !important;}
 </style>
 """, unsafe_allow_html=True)
 
