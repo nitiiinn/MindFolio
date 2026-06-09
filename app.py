@@ -487,34 +487,7 @@ if flash_btn:
 
 if not st.session_state.processed_files:
  # ── Empty State ──
- st.markdown("")
- col_empty = st.columns([1, 3, 1])[1]
- with col_empty:
-  st.markdown(
-   """
-   <div style="text-align: center; padding: 3rem 0; color: #6b7280;">
-    <h3 style="color: #c4b5fd; font-weight: 600; font-size: 1.8rem; margin-bottom: 1rem;">Welcome to MindFolio</h3>
-    <p style="color: #9ca3af; font-size: 1.1rem; max-width: 80%; margin: 0 auto; line-height: 1.6;">
-     Upload your PDF documents in the sidebar on the left to start analyzing, chatting, and generating study materials.
-    </p>
-   </div>
-   """,
-   unsafe_allow_html=True,
-  )
-  st.markdown(
-   """
-   <div style="margin-top: 2rem; padding: 1.5rem; border: 1px dashed #374151; border-radius: 12px; text-align: center;">
-    <p style="color: #9ca3af; font-size: 0.85rem; margin: 0;">
-      <strong>Features available after processing:</strong><br><br>
-      Chat with your documents&nbsp;&nbsp;•&nbsp;&nbsp;
-      Generate study notes<br>
-      Generate MCQ quizzes&nbsp;&nbsp;•&nbsp;&nbsp;
-      Generate flashcards for revision
-    </p>
-   </div>
-   """,
-   unsafe_allow_html=True,
-  )
+ pass
 
 else:
  # ── Tab Navigation ──
