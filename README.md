@@ -4,7 +4,7 @@ An intelligent, AI-powered PDF reader and analyzer that uses Retrieval-Augmented
 
 ## ✨ Features
 
-- **🧠 Intelligent Q&A (RAG):** Chat with your PDFs. The app uses ChromaDB and embeddings to accurately retrieve information and answer your questions alongside Gemini AI.
+- **🧠 Intelligent Q&A (RAG):** Chat with your PDFs. The app uses ChromaDB and embeddings to accurately retrieve information and answer your questions alongside Mistral and Groq AI.
 - **📝 Automated Study Materials:** Automatically generate comprehensive study notes and flashcards from your documents.
 - **📊 Report Generation:** Synthesize document information into structured PDF reports (powered by ReportLab).
 
@@ -20,7 +20,7 @@ The project follows a clean, modular architecture:
 ## 🛠️ Tech Stack
 
 - **Language:** Python
-- **AI Models:** Gemini API, Groq API
+- **AI Models:** Mistral API, Groq API
 - **Vector Database:** ChromaDB
 - **PDF Generation:** ReportLab
 
@@ -30,7 +30,7 @@ The project follows a clean, modular architecture:
 ### Prerequisites
 
 1. Python 3.8+
-2. A Gemini API Key
+2. A Mistral API Key
 3. A Groq API Key
 
 
@@ -59,7 +59,7 @@ The project follows a clean, modular architecture:
 4. **Set up Environment Variables:**
    Create a `.env` file in the root directory and add your API keys:
    ```env
-   GEMINI_API_KEY=your_gemini_api_key_here
+   MISTRAL_API_KEY=your_mistral_api_key_here
    GROQ_API_KEY=your_groq_api_key_here
    ```
 
