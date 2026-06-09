@@ -187,29 +187,8 @@ st.markdown("""
   margin: 0;
  }
 
- /* Hide Streamlit Cloud badges & Toolbar (Fork button) */
+ /* Hide Streamlit Cloud badges */
  [class^="viewerBadge_"] {display: none !important;}
- [data-testid="stToolbar"] {display: none !important;}
- [data-testid="stHeaderActionElements"] {display: none !important;}
- .stAppToolbar {display: none !important;}
-
- /* Force the sidebar expand toggle to be fully visible, opaque, and above all layers */
- [data-testid="collapsedControl"], [data-testid="stSidebarCollapsedControl"] {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  z-index: 999999 !important;
-  background-color: #2F2F2F !important;
-  border-radius: 8px !important;
-  padding: 5px !important;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
- }
- 
- /* Force the toggle icon itself to be stark white */
- [data-testid="collapsedControl"] svg, [data-testid="stSidebarCollapsedControl"] svg {
-  fill: #FFFFFF !important;
-  color: #FFFFFF !important;
- }
 </style>
 """, unsafe_allow_html=True)
 
