@@ -30,15 +30,11 @@ def generate_flashcards_content(router, retriever):
 
     all_context = []
     for q in queries:
-        # Use base_retriever to avoid exponential query rewriting
-        context_docs = retriever.base_retriever.invoke(q)
-        for doc in context_docs[:2]: # take top 2 per query
+        context_docs = retriever.invoke(q)
+        for doc in context_docs:
             content = doc.page_content.strip()
             if content and content not in all_context:
                 all_context.append(content)
-                
-    # Limit to max 12 chunks to strictly fit within token limits
-    all_context = all_context[:12]
 
     combined_context = "\n\n".join(all_context)
 
