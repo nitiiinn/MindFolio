@@ -62,12 +62,12 @@ TASK_MODEL_ROUTES = {
         max_tokens=256,
     ),
 
-    # Answers user questions using retrieved document context
+    # High-accuracy model for understanding context and reasoning
     "core_qa": ModelRoute(
-        provider="mistral",
-        model_id="ministral-8b-2512",
-        temperature=0.3,
-        max_tokens=8000,
+        provider="groq",
+        model_id="llama-3.3-70b-versatile",
+        temperature=0.0,
+        max_tokens=1000,
     ),
 
     # Generates Q&A flashcards from documents
