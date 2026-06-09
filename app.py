@@ -30,7 +30,7 @@ load_dotenv()
 
 # ── Page Config ──────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="PDF Intelligence Hub",
+    page_title="MindFolio",
     page_icon="📄",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -243,7 +243,7 @@ for key, val in defaults.items():
 # ── Hero Header ──────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="hero-header">
-    <h1>📄 PDF Intelligence Hub</h1>
+    <h1>MindFolio</h1>
     <p>Upload multiple PDFs — Chat, generate Notes, Quizzes & Flashcards with AI</p>
 </div>
 """, unsafe_allow_html=True)
@@ -512,109 +512,21 @@ if flash_btn:
 # ── Main Content Area ────────────────────────────────────────────────────────
 
 if not st.session_state.processed_files:
-    # ── Empty State with Uploader in Main Area ──
+    # ── Empty State ──
     st.markdown("")
     col_empty = st.columns([1, 3, 1])[1]
     with col_empty:
         st.markdown(
             """
-            <div style="text-align: center; padding: 2rem 0 1rem 0; color: #6b7280;">
-                <div style="font-size: 4rem; margin-bottom: 0.5rem;">📚</div>
-                <h3 style="color: #c4b5fd; font-weight: 600;">Get Started</h3>
-                <p style="color: #9ca3af; font-size: 0.95rem;">
-                    Upload one or more PDFs below to unlock AI-powered insights
+            <div style="text-align: center; padding: 3rem 0; color: #6b7280;">
+                <h3 style="color: #c4b5fd; font-weight: 600; font-size: 1.8rem; margin-bottom: 1rem;">Welcome to MindFolio</h3>
+                <p style="color: #9ca3af; font-size: 1.1rem; max-width: 80%; margin: 0 auto; line-height: 1.6;">
+                    Upload your PDF documents in the sidebar on the left to start analyzing, chatting, and generating study materials.
                 </p>
             </div>
             """,
             unsafe_allow_html=True,
         )
-
-        # Main area uploader
-        main_uploaded = st.file_uploader(
-            "📁 Choose PDF files",
-            type=["pdf"],
-            accept_multiple_files=True,
-            help="Upload one or more PDF files to analyze",
-            key="main_pdf_uploader",
-        )
-
-        if main_uploaded:
-            st.markdown(f"**{len(main_uploaded)} file(s) selected:**")
-            for f in main_uploaded:
-                size_kb = f.size / 1024
-                size_str = f"{size_kb / 1024:.1f} MB" if size_kb > 1024 else f"{size_kb:.0f} KB"
-                st.markdown(
-                    f'<div class="file-chip">📄 {f.name} <span style="color:#6366f1">({size_str})</span></div>',
-                    unsafe_allow_html=True,
-                )
-            st.markdown("")
-
-        main_process_btn = st.button(
-            "🚀 Process Documents",
-            use_container_width=True,
-            disabled=not main_uploaded,
-            type="primary",
-            key="main_process_btn",
-        )
-
-        # Process from main area
-        if main_process_btn and main_uploaded:
-            with st.spinner(""):
-                st.markdown(
-                    '<div class="processing-box">⚙️ Processing your documents... This may take a moment.</div>',
-                    unsafe_allow_html=True,
-                )
-                progress = st.progress(0, text="Initializing...")
-
-                progress.progress(10, text="📥 Saving uploaded files...")
-                temp_dir = tempfile.mkdtemp()
-                pdf_paths = []
-                for uf in main_uploaded:
-                    path = os.path.join(temp_dir, uf.name)
-                    with open(path, "wb") as f_out:
-                        f_out.write(uf.getbuffer())
-                    pdf_paths.append(path)
-
-                progress.progress(25, text="📖 Reading PDFs...")
-                all_docs = load_multiple_pdfs(pdf_paths)
-                total_pages = len(all_docs)
-
-                progress.progress(45, text="✂️ Splitting into chunks...")
-                chunks = split_documents(all_docs)
-
-                progress.progress(60, text="🧠 Loading embedding model...")
-                if st.session_state.embedding_model is None:
-                    st.session_state.embedding_model = load_embedding_model()
-
-                progress.progress(75, text="🗄️ Building vector store...")
-                st.session_state.vectorstore = create_vectorstore(
-                    chunks, st.session_state.embedding_model
-                )
-
-                progress.progress(85, text="🤖 Loading AI router...")
-                if st.session_state.model_router is None:
-                    st.session_state.model_router = load_model_router()
-                if st.session_state.prompt is None:
-                    st.session_state.prompt = load_prompt()
-
-                progress.progress(92, text="🔍 Setting up retriever...")
-                st.session_state.retriever = create_retriever(
-                    st.session_state.vectorstore,
-                    st.session_state.model_router
-                )
-
-                progress.progress(100, text="✅ Ready!")
-                st.session_state.processed_files = [uf.name for uf in main_uploaded]
-                st.session_state.total_chunks = len(chunks)
-                st.session_state.total_pages = total_pages
-                st.session_state.messages = []
-                st.session_state.generated_notes_pdf = None
-                st.session_state.generated_quiz_pdf = None
-                st.session_state.generated_flashcards_pdf = None
-                st.session_state.active_tab = "chat"
-
-                st.rerun()
-
         st.markdown(
             """
             <div style="margin-top: 2rem; padding: 1.5rem; border: 1px dashed #374151; border-radius: 12px; text-align: center;">
