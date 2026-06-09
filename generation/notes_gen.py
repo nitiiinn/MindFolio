@@ -9,7 +9,6 @@ from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
     PageBreak, HRFlowable
 )
-from reportlab.platypus import Image as RLImage
 
 from llm.prompt import load_notes_prompt
 
