@@ -187,8 +187,15 @@ st.markdown("""
   margin: 0;
  }
 
- /* Hide Streamlit Cloud badges */
- [class^="viewerBadge_"] {display: none !important;}
+ /* Hide Streamlit Cloud badges and Deploy/Fork buttons safely */
+ [data-testid="stDeployButton"] {display: none !important;}
+ [data-testid="manage-app-button"] {display: none !important;}
+ [data-testid="host-badge"] {display: none !important;}
+ [data-testid="viewerBadge"] {display: none !important;}
+ [class*="viewerBadge"] {display: none !important;}
+ iframe[src*="badge"] {display: none !important;}
+ #manage-app-button {display: none !important;}
+ #viewerBadge {display: none !important;}
 </style>
 """, unsafe_allow_html=True)
 
