@@ -1,24 +1,33 @@
 # LangChain Core and Integrations
+langchain
 langchain-core
 langchain-community
 langchain-groq
-langchain-huggingface
 langchain-text-splitters
 
-# Vector Stores
+# Vector Store
 chromadb
+opentelemetry-api==1.39.1
+opentelemetry-sdk==1.39.1
+opentelemetry-exporter-otlp-proto-grpc==1.39.1
+opentelemetry-exporter-otlp-proto-common==1.39.1
+opentelemetry-proto==1.39.1
+opentelemetry-semantic-conventions==0.60b1
 
-# Document Loaders & Retrievers
-pypdf             # Required for PyPDFLoader
-beautifulsoup4    # Required for WebBaseLoader
+# Document Loaders
+pypdf
 
-# Output Parsers & Data Formatting
-pydantic          # Used for PydanticOutputParser
+# Data Validation
+pydantic
 
-# Web Interfaces and Environment Loaders
+# Web Interface & Environment
 streamlit
 python-dotenv
 
-# General Utilities
+# AI Provider SDKs
+groq
+mistralai
+
+# Utilities
 requests
 reportlab
