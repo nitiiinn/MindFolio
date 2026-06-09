@@ -506,18 +506,13 @@ else:
      unsafe_allow_html=True,
     )
    else:
-    st.markdown(
-     f'<div class="assistant-bubble"> {msg["content"]}</div>',
-     unsafe_allow_html=True,
-    )
+    html_content = f'<div class="assistant-bubble">\n{msg["content"]}\n'
     if "sources" in msg and msg["sources"]:
-     sources_html = " ".join(
-      [f'<span class="source-badge"> {s}</span>' for s in msg["sources"]]
-     )
-     st.markdown(
-      f'<div style="margin-left: 0.5rem; margin-bottom: 0.5rem;">Sources: {sources_html}</div>',
-      unsafe_allow_html=True,
-     )
+     sources_html = " ".join([f'<span class="source-badge">{s}</span>' for s in msg["sources"]])
+     html_content += f'<div style="margin-top: 1rem; color: #9b9b9b; font-size: 0.85rem;">Sources: {sources_html}</div>'
+    html_content += '</div>'
+    
+    st.markdown(html_content, unsafe_allow_html=True)
 
   # Chat input
   if query := st.chat_input("Ask a question about your documents..."):
