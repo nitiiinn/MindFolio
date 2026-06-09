@@ -1,12 +1,34 @@
+"""
+prompt.py — All the AI prompt templates used in the application.
+
+Each function returns a SimplePrompt object with a template string.
+Templates use {placeholders} that get filled in with actual data at runtime.
+
+Prompts in this file:
+  - load_prompt()                → Q&A (chat with your PDF)
+  - load_notes_prompt()          → Study notes generation
+  - load_quiz_prompt()           → MCQ quiz generation
+  - load_flashcards_prompt()     → Flashcard generation
+  - load_query_rewriter_prompt() → Rewrite queries for better search
+  - load_verifier_prompt()       → Check answers for hallucinations
+"""
+
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
 class SimplePrompt:
+    """A simple wrapper that holds a prompt template string.
+
+    Usage:
+        prompt = SimplePrompt(template="Hello {name}!")
+        result = prompt.format(name="Nitin")  # → "Hello Nitin!"
+    """
     template: str
 
     def format(self, **kwargs) -> str:
         return self.template.format(**kwargs)
+
 
 
 def load_prompt():
