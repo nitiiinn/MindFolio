@@ -20,7 +20,7 @@ class RoutedRetriever:
         self.base_retriever = vectorstore.as_retriever(
             search_type="mmr",  # MMR = balances relevance with diversity
             search_kwargs={
-                "k": 6,             # Return top 6 results
+                "k": 4,             # Return top 4 results (reduced from 6 to save tokens)
                 "fetch_k": 20,       # Consider top 20 candidates before filtering
                 "lambda_mult": 0.7,  # 0.0 = max diversity, 1.0 = max relevance
             },
@@ -39,16 +39,26 @@ class RoutedRetriever:
         if self.router is not None:
             search_queries.extend(self._rewrite_query(query, chat_history))
 
-        # Search with each query and deduplicate results
+        # Search with each query concurrently and deduplicate results
+        import concurrent.futures
         seen = set()
         documents = []
-        for search_query in search_queries:
-            for doc in self.base_retriever.invoke(search_query):
-                # Create a unique key to avoid duplicate chunks
-                doc_key = (doc.page_content, tuple(sorted(doc.metadata.items())))
-                if doc_key not in seen:
-                    seen.add(doc_key)
-                    documents.append(doc)
+        
+        def fetch_docs(sq):
+            return self.base_retriever.invoke(sq)
+            
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+            future_to_query = {executor.submit(fetch_docs, sq): sq for sq in search_queries}
+            for future in concurrent.futures.as_completed(future_to_query):
+                try:
+                    docs = future.result()
+                    for doc in docs:
+                        doc_key = (doc.page_content, tuple(sorted(doc.metadata.items())))
+                        if doc_key not in seen:
+                            seen.add(doc_key)
+                            documents.append(doc)
+                except Exception as exc:
+                    print(f"Search query failed: {exc}")
 
         return documents
 

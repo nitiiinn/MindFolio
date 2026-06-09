@@ -34,9 +34,17 @@ class MistralEmbeddings(Embeddings):
 
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
         """Embed a list of document chunks (used when uploading PDFs)."""
+        import concurrent.futures
+        
+        batches = list(_batched(texts, self.batch_size))
         vectors = []
-        for batch in _batched(texts, self.batch_size):
-            vectors.extend(self._embed_batch(batch))
+        
+        # Use concurrent processing, preserving order with executor.map
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            results = executor.map(self._embed_batch, batches)
+            for batch_vectors in results:
+                vectors.extend(batch_vectors)
+                
         return vectors
 
     def embed_query(self, text: str) -> list[float]:

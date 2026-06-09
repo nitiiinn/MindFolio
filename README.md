@@ -6,6 +6,7 @@ An intelligent, AI-powered PDF reader and analyzer that uses Retrieval-Augmented
 
 - **🧠 Intelligent Q&A (RAG):** Chat with your PDFs. The app uses ChromaDB and embeddings to accurately retrieve information and answer your questions alongside Mistral and Groq AI.
 - **📝 Automated Study Materials:** Automatically generate comprehensive study notes and flashcards from your documents.
+- **⚡ High Performance Processing:** Utilizes PyMuPDF for blazing-fast text extraction and concurrent API processing to quickly embed large documents without throttling.
 - **📊 Report Generation:** Synthesize document information into structured PDF reports (powered by ReportLab).
 
 
@@ -67,9 +68,8 @@ The project follows a clean, modular architecture:
 
 To start the main application:
 ```bash
-python app.py
+streamlit run app.py
 ```
-*(Or `python main.py` depending on the entry point).*
 
 ## � Future Scope
 

@@ -100,7 +100,7 @@ TASK_MODEL_ROUTES = {
     # Checks if the Q&A answer is actually supported by the document
     "verifier_layer": ModelRoute(
         provider="groq",
-        model_id="openai/gpt-oss-120b",
+        model_id="meta-llama/llama-4-scout-17b-16e-instruct",
         temperature=0.0,
         max_tokens=None,
     ),
@@ -108,7 +108,7 @@ TASK_MODEL_ROUTES = {
     # Backup model — used when Mistral models fail
     "feature_fallback": ModelRoute(
         provider="groq",
-        model_id="meta-llama/llama-4-scout-17b-16e-instruct",
+        model_id="llama-3.3-70b-versatile",
         temperature=0.35,
         max_tokens=8000,
     ),
