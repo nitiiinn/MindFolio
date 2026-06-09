@@ -187,8 +187,11 @@ st.markdown("""
   margin: 0;
  }
 
- /* Hide default streamlit cloud badge */
+ /* Hide Streamlit Cloud badges & Toolbar (Fork button) */
  [class^="viewerBadge_"] {display: none !important;}
+ [data-testid="stToolbar"] {display: none !important;}
+ [data-testid="stHeaderActionElements"] {display: none !important;}
+ .stAppToolbar {display: none !important;}
 </style>
 """, unsafe_allow_html=True)
 
