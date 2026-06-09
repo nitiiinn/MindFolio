@@ -44,15 +44,24 @@ class MistralEmbeddings(Embeddings):
 
     def _embed_batch(self, texts: list[str]) -> list[list[float]]:
         """Send a batch of texts to the Mistral API and get vectors back."""
-        response = self.client.embeddings.create(
-            model=self.model_name,
-            inputs=texts,
-        )
-        return [
-            _normalize_vector(item.embedding)
-            for item in response.data
-            if item.embedding is not None
-        ]
+        import time
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = self.client.embeddings.create(
+                    model=self.model_name,
+                    inputs=texts,
+                )
+                return [
+                    _normalize_vector(item.embedding)
+                    for item in response.data
+                    if item.embedding is not None
+                ]
+            except Exception as e:
+                if attempt == max_retries - 1:
+                    raise e
+                print(f"Embedding API error: {e}. Retrying in {2 ** attempt} seconds...")
+                time.sleep(2 ** attempt)
 
 
 def load_embedding_model():
