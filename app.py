@@ -522,6 +522,9 @@ else:
 
   # Chat input
   if query := st.chat_input("Ask a question about your documents..."):
+   chat_history_list = st.session_state.messages.copy()
+   chat_history_str = "\n".join([f"{m['role'].capitalize()}: {m['content']}" for m in chat_history_list[-4:]])
+
    st.session_state.messages.append({"role": "user", "content": query})
    st.markdown(
     f'<div class="user-bubble"> {query}</div>',
@@ -529,7 +532,7 @@ else:
    )
 
    with st.spinner("🔎 Searching across your documents..."):
-    context_docs = st.session_state.retriever.invoke(query)
+    context_docs = st.session_state.retriever.invoke(query, chat_history=chat_history_str)
     context = "\n".join([doc.page_content for doc in context_docs])
     sources = list(set(
      os.path.basename(doc.metadata.get("source_file", doc.metadata.get("source", "Unknown")))
@@ -540,6 +543,7 @@ else:
      st.session_state.prompt,
      query,
      context,
+     chat_history=chat_history_list
     )
     
     if response.get("is_internet_search"):

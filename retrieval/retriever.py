@@ -27,7 +27,7 @@ class RoutedRetriever:
         )
         self.router = router  # The AI model router (for query rewriting)
 
-    def invoke(self, query: str):
+    def invoke(self, query: str, chat_history: str = ""):
         """Search for documents relevant to the query.
 
         If a router is available, the query is first rewritten into multiple
@@ -37,7 +37,7 @@ class RoutedRetriever:
 
         # Expand the query into 3 alternative versions using AI
         if self.router is not None:
-            search_queries.extend(self._rewrite_query(query))
+            search_queries.extend(self._rewrite_query(query, chat_history))
 
         # Search with each query and deduplicate results
         seen = set()
@@ -52,12 +52,12 @@ class RoutedRetriever:
 
         return documents
 
-    def _rewrite_query(self, query: str) -> list[str]:
+    def _rewrite_query(self, query: str, chat_history: str = "") -> list[str]:
         """Use an LLM to generate alternative search queries."""
         prompt = load_query_rewriter_prompt()
         raw_response = self.router.complete(
             "query_rewriting",
-            [{"role": "user", "content": prompt.format(query=query)}],
+            [{"role": "user", "content": prompt.format(query=query, chat_history=chat_history)}],
             temperature=0.0,
         )
 

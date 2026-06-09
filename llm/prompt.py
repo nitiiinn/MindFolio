@@ -38,6 +38,9 @@ You are a helpful AI assistant.
 
 Answer the question ONLY from the provided context.
 
+Previous Conversation Summary:
+{history_summary}
+
 Query:
 {query}
 
@@ -156,10 +159,14 @@ Rewrite the student's question into 3 concise standalone search queries that wil
 
 Rules:
 - Preserve the original meaning.
+- Resolve any pronouns (e.g., "it", "they", "this") using the Chat History.
 - Include important entities, topics, or constraints from the question.
 - Keep each rewrite short and search-oriented.
 - Do not add commentary, numbering, bullets, or quotes.
 - Output exactly 3 lines, one query per line.
+
+Chat History:
+{chat_history}
 
 Student Question:
 {query}
@@ -196,4 +203,17 @@ Retrieved Context:
 Draft Answer:
 {answer}
 """
+    )
+
+def load_history_summarizer_prompt():
+    """Prompt that summarizes chat history into a concise paragraph."""
+    
+    return SimplePrompt(
+        template="""You are a conversation summarizer. 
+Summarize the following chat history into a concise paragraph. Focus on the main topics discussed, user preferences, and any important entities or facts established. Do not answer the user's questions, just summarize the past interaction.
+
+Chat History:
+{chat_history}
+
+Summary:"""
     )

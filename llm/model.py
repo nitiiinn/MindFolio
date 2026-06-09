@@ -113,6 +113,14 @@ TASK_MODEL_ROUTES = {
         max_tokens=8000,
     ),
 
+    # Summarizes chat history to save tokens for the main QA bot
+    "history_summarization": ModelRoute(
+        provider="mistral",
+        model_id="mistral-small-2506",
+        temperature=0.0,
+        max_tokens=500,
+    ),
+
     # Uses Groq's compound AI to perform web searches when context is missing
     "internet_search": ModelRoute(
         provider="groq",
@@ -249,14 +257,32 @@ def load_model_router() -> StudyAssistantRouter:
     return StudyAssistantRouter()
 
 
-def answer_question(router, prompt, query: str, context: str) -> dict[str, Any]:
+from llm.prompt import load_verifier_prompt, load_history_summarizer_prompt
+
+def answer_question(router, prompt, query: str, context: str, chat_history: list[dict[str, str]] = None) -> dict[str, Any]:
     """Full Q&A pipeline: generate an answer, then verify it for accuracy."""
-    # Step 1: Get a draft answer from the primary Q&A model
+    
+    # Step 1: Summarize chat history if available
+    history_summary = "None"
+    if chat_history and len(chat_history) > 0:
+        history_str = "\\n".join([f"{msg['role'].capitalize()}: {msg['content']}" for msg in chat_history[-6:]])
+        summarizer_prompt = load_history_summarizer_prompt()
+        history_summary = router.complete(
+            "history_summarization",
+            [{"role": "user", "content": summarizer_prompt.format(chat_history=history_str)}]
+        )
+        
+    # Step 2: Get a draft answer from the primary Q&A model
+    # We no longer pass the full chat_history array to save tokens
+    messages = [
+        {"role": "user", "content": prompt.format(query=query, content=context, history_summary=history_summary)}
+    ]
+    
     draft_answer = router.complete(
         "core_qa",
-        [{"role": "user", "content": prompt.format(query=query, content=context)}],
+        messages,
     )
-    # Step 2: Verify the answer with a separate model
+    # Step 3: Verify the answer with a separate model
     verification = router.verify_answer(query, context, draft_answer)
     verification["draft_answer"] = draft_answer
 
