@@ -19,6 +19,7 @@ class MistralEmbeddings(Embeddings):
     - No need to install heavy packages (torch, sentence-transformers).
     - Much smaller deployment size (~300MB vs ~4GB).
     - Works great on free hosting like Streamlit Cloud.
+    - PAISE NAHI HAI MUJHPE YEH SAB KHARIDNE KE LIYE 😅
     """
 
     def __init__(self, model_name: str = "mistral-embed", batch_size: int = 64):
