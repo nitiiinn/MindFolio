@@ -196,6 +196,16 @@ st.markdown("""
  iframe[src*="badge"] {display: none !important;}
  #manage-app-button {display: none !important;}
  #viewerBadge {display: none !important;}
+
+ /* Sticky Navigation */
+ [data-testid="stRadio"] {
+  position: sticky !important;
+  top: 3rem !important;
+  z-index: 999 !important;
+  background-color: var(--background-color) !important;
+  padding-bottom: 10px !important;
+  border-bottom: 1px solid #383838 !important;
+ }
 </style>
 """, unsafe_allow_html=True)
 
