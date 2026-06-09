@@ -259,36 +259,7 @@ with st.sidebar:
   type="primary",
  )
 
- # ── Navigation ──
- if st.session_state.processed_files:
-  st.markdown("---")
-  st.markdown("## Navigation")
 
-  view_options = {
-   "chat": " Chat",
-   "notes": " Study Notes",
-   "quiz": " MCQ Quiz",
-   "flashcards": " Flashcards"
-  }
-  
-  if st.session_state.active_tab not in view_options:
-   st.session_state.active_tab = "chat"
-   
-  current_idx = list(view_options.keys()).index(st.session_state.active_tab)
-  
-  selected_view = st.sidebar.radio(
-   "Select View",
-   options=list(view_options.values()),
-   index=current_idx,
-   label_visibility="collapsed"
-  )
-  
-  for key, val in view_options.items():
-   if val == selected_view:
-    if st.session_state.active_tab != key:
-     st.session_state.active_tab = key
-     st.rerun()
-    break
 
  # ── Stats Section ──
  if st.session_state.processed_files:
@@ -479,6 +450,36 @@ if not st.session_state.processed_files:
  pass
 
 else:
+ # ── Top Navigation ──
+ view_options = {
+  "chat": " Chat",
+  "notes": " Study Notes",
+  "quiz": " MCQ Quiz",
+  "flashcards": " Flashcards"
+ }
+ 
+ if st.session_state.active_tab not in view_options:
+  st.session_state.active_tab = "chat"
+  
+ current_idx = list(view_options.keys()).index(st.session_state.active_tab)
+ 
+ selected_view = st.radio(
+  "Navigation",
+  options=list(view_options.values()),
+  index=current_idx,
+  horizontal=True,
+  label_visibility="collapsed"
+ )
+ 
+ for key, val in view_options.items():
+  if val == selected_view:
+   if st.session_state.active_tab != key:
+    st.session_state.active_tab = key
+    st.rerun()
+   break
+   
+ st.markdown("---")
+
  # ── Main Content Area Views ──
  
  # ════════════════════════════════════════════════════════════════
