@@ -48,47 +48,44 @@ st.markdown("""
 
  /* Hero Header */
  .hero-header {
-  background: #18181b;
-  border: 1px solid #27272a;
-  padding: 2.5rem 2rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
+  background: transparent;
+  padding: 2rem 2rem 1rem 2rem;
+  margin-bottom: 1rem;
   text-align: center;
  }
  .hero-header h1 {
-  color: #ffffff;
-  font-size: 2.4rem;
+  color: #ECECEC;
+  font-size: 2.2rem;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
   letter-spacing: -0.5px;
  }
  .hero-header p {
-  color: #a1a1aa;
-  font-size: 1.05rem;
+  color: #9b9b9b;
+  font-size: 1rem;
   margin: 0;
-  font-weight: 300;
+  font-weight: 400;
  }
 
  /* Stat Cards */
  .stat-card {
-  background: #09090b;
-  border: 1px solid #27272a;
-  border-radius: 8px;
+  background: #2F2F2F;
+  border-radius: 12px;
   padding: 1.25rem;
   text-align: center;
-  transition: border-color 0.2s ease;
+  transition: opacity 0.2s ease;
  }
  .stat-card:hover {
-  border-color: #52525b;
+  opacity: 0.9;
  }
  .stat-number {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #ECECEC;
   margin: 0;
  }
  .stat-label {
-  color: #71717a;
+  color: #9b9b9b;
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -100,41 +97,32 @@ st.markdown("""
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #27272a;
-  border: 1px solid #3f3f46;
-  border-radius: 6px;
+  background: #2F2F2F;
+  border-radius: 8px;
   padding: 6px 14px;
   margin: 4px;
   font-size: 0.82rem;
-  color: #e4e4e7;
-  transition: all 0.2s ease;
- }
- .file-chip:hover {
-  border-color: #71717a;
-  background: #3f3f46;
+  color: #ECECEC;
  }
 
  /* Chat Bubbles */
  .user-bubble {
-  background: #27272a;
-  color: #f4f4f5;
-  padding: 1rem 1.25rem;
-  border-radius: 12px 12px 2px 12px;
+  background: #2F2F2F;
+  color: #ECECEC;
+  padding: 0.75rem 1.25rem;
+  border-radius: 1.5rem;
   margin: 0.5rem 0;
-  max-width: 85%;
+  max-width: 80%;
   margin-left: auto;
   font-size: 0.95rem;
   line-height: 1.6;
-  border: 1px solid #3f3f46;
  }
  .assistant-bubble {
-  background: #09090b;
-  border: 1px solid #27272a;
-  color: #d4d4d8;
-  padding: 1rem 1.25rem;
-  border-radius: 12px 12px 12px 2px;
+  background: transparent;
+  color: #ECECEC;
+  padding: 0.75rem 0;
   margin: 0.5rem 0;
-  max-width: 85%;
+  max-width: 100%;
   font-size: 0.95rem;
   line-height: 1.6;
  }
@@ -142,33 +130,22 @@ st.markdown("""
  /* Source Badge */
  .source-badge {
   display: inline-block;
-  background: #27272a;
-  border: 1px solid #3f3f46;
-  color: #a1a1aa;
+  background: #2F2F2F;
+  color: #9b9b9b;
   font-size: 0.72rem;
   padding: 3px 10px;
   border-radius: 6px;
   margin: 2px;
  }
 
- /* Sidebar styling */
- section[data-testid="stSidebar"] {
-  background: #09090b;
-  border-right: 1px solid #27272a;
- }
- section[data-testid="stSidebar"] .stMarkdown h2 {
-  color: #ffffff !important;
-  font-weight: 500;
- }
-
  /* Processing indicator */
  .processing-box {
-  background: #18181b;
-  border: 1px solid #27272a;
+  background: transparent;
+  border: 1px solid #383838;
   border-radius: 8px;
   padding: 1rem;
   text-align: center;
-  color: #a1a1aa;
+  color: #9b9b9b;
   animation: pulse 2s infinite;
  }
  @keyframes pulse {
@@ -178,37 +155,34 @@ st.markdown("""
 
  /* Generation success card */
  .gen-success {
-  background: #18181b;
-  border: 1px solid #27272a;
-  border-radius: 8px;
+  background: #2F2F2F;
+  border-radius: 12px;
   padding: 1.25rem;
   text-align: center;
-  color: #d4d4d8;
+  color: #ECECEC;
   margin: 1rem 0;
  }
  .gen-success h3 {
-  color: #ffffff;
+  color: #ECECEC;
   font-weight: 500;
   margin: 0 0 0.5rem 0;
  }
 
  /* Tab styling */
  .gen-tab-header {
-  background: #18181b;
-  border: 1px solid #27272a;
-  border-radius: 8px;
+  background: transparent;
   padding: 1rem 1.25rem;
   margin-bottom: 1rem;
   text-align: center;
  }
  .gen-tab-header h2 {
-  color: #ffffff;
+  color: #ECECEC;
   font-size: 1.3rem;
   font-weight: 500;
   margin: 0 0 0.3rem 0;
  }
  .gen-tab-header p {
-  color: #a1a1aa;
+  color: #9b9b9b;
   font-size: 0.85rem;
   margin: 0;
  }
