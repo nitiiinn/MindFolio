@@ -259,26 +259,36 @@ with st.sidebar:
   type="primary",
  )
 
- # ── Generation Buttons ──
+ # ── Navigation ──
  if st.session_state.processed_files:
   st.markdown("---")
-  st.markdown("## AI Generation")
+  st.markdown("## Navigation")
 
-  gen_col1, gen_col2, gen_col3 = st.columns(3)
-  with gen_col1:
-   st.image("images/notes.png", use_container_width=True)
-   notes_btn = st.button("Notes", use_container_width=True, help="Generate Notes", key="btn_notes")
-  with gen_col2:
-   st.image("images/quiz.png", use_container_width=True)
-   quiz_btn = st.button("Quiz", use_container_width=True, help="Generate MCQ Quiz", key="btn_quiz")
-  with gen_col3:
-   st.image("images/cards.png", use_container_width=True)
-   flash_btn = st.button("Cards", use_container_width=True, help="Generate Flashcards", key="btn_cards")
-
- else:
-  notes_btn = False
-  quiz_btn = False
-  flash_btn = False
+  view_options = {
+   "chat": " Chat",
+   "notes": " Study Notes",
+   "quiz": " MCQ Quiz",
+   "flashcards": " Flashcards"
+  }
+  
+  if st.session_state.active_tab not in view_options:
+   st.session_state.active_tab = "chat"
+   
+  current_idx = list(view_options.keys()).index(st.session_state.active_tab)
+  
+  selected_view = st.sidebar.radio(
+   "Select View",
+   options=list(view_options.values()),
+   index=current_idx,
+   label_visibility="collapsed"
+  )
+  
+  for key, val in view_options.items():
+   if val == selected_view:
+    if st.session_state.active_tab != key:
+     st.session_state.active_tab = key
+     st.rerun()
+    break
 
  # ── Stats Section ──
  if st.session_state.processed_files:
@@ -460,32 +470,6 @@ def _run_generation(gen_type, content_fn, build_fn, session_key):
  return content_data
 
 
-if notes_btn:
- content = _run_generation(
-  "notes",
-  generate_notes_content,
-  build_notes_pdf,
-  "generated_notes_pdf",
- )
- st.rerun()
-
-if quiz_btn:
- content = _run_generation(
-  "quiz",
-  generate_quiz_content,
-  build_quiz_pdf,
-  "generated_quiz_pdf",
- )
- st.rerun()
-
-if flash_btn:
- content = _run_generation(
-  "flashcards",
-  generate_flashcards_content,
-  build_flashcards_pdf,
-  "generated_flashcards_pdf",
- )
- st.rerun()
 
 
 # ── Main Content Area ────────────────────────────────────────────────────────
@@ -495,15 +479,12 @@ if not st.session_state.processed_files:
  pass
 
 else:
- # ── Tab Navigation ──
- tab_chat, tab_notes, tab_quiz, tab_flashcards = st.tabs([
-  " Chat", " Notes", " MCQ Quiz", " Flashcards"
- ])
-
+ # ── Main Content Area Views ──
+ 
  # ════════════════════════════════════════════════════════════════
- # TAB: Chat
+ # VIEW: Chat
  # ════════════════════════════════════════════════════════════════
- with tab_chat:
+ if st.session_state.active_tab == "chat":
   # Display chat messages
   for msg in st.session_state.messages:
    if msg["role"] == "user":
@@ -590,9 +571,9 @@ else:
    st.rerun()
 
  # ════════════════════════════════════════════════════════════════
- # TAB: Notes
+ # VIEW: Notes
  # ════════════════════════════════════════════════════════════════
- with tab_notes:
+ elif st.session_state.active_tab == "notes":
   st.markdown("""
   <div class="gen-tab-header">
    <h2> AI Study Notes</h2>
@@ -643,9 +624,9 @@ else:
     """, unsafe_allow_html=True)
 
  # ════════════════════════════════════════════════════════════════
- # TAB: Quiz
+ # VIEW: Quiz
  # ════════════════════════════════════════════════════════════════
- with tab_quiz:
+ elif st.session_state.active_tab == "quiz":
   st.markdown("""
   <div class="gen-tab-header">
    <h2> MCQ Practice Quiz</h2>
@@ -696,9 +677,9 @@ else:
     """, unsafe_allow_html=True)
 
  # ════════════════════════════════════════════════════════════════
- # TAB: Flashcards
+ # VIEW: Flashcards
  # ════════════════════════════════════════════════════════════════
- with tab_flashcards:
+ elif st.session_state.active_tab == "flashcards":
   st.markdown("""
   <div class="gen-tab-header">
    <h2> Study Flashcards</h2>
