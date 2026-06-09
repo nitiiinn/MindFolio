@@ -532,7 +532,29 @@ else:
    )
 
    with st.spinner("🔎 Searching across your documents..."):
-    context_docs = st.session_state.retriever.invoke(query, chat_history=chat_history_str)
+    from concurrent.futures import ThreadPoolExecutor
+    from llm.prompt import load_history_summarizer_prompt
+
+    def get_docs():
+        return st.session_state.retriever.invoke(query, chat_history=chat_history_str)
+
+    def get_history_summary():
+        if chat_history_list and len(chat_history_list) > 0:
+            history_str = "\n".join([f"{msg['role'].capitalize()}: {msg['content']}" for msg in chat_history_list[-6:]])
+            summarizer_prompt = load_history_summarizer_prompt()
+            return st.session_state.model_router.complete(
+                "history_summarization",
+                [{"role": "user", "content": summarizer_prompt.format(chat_history=history_str)}]
+            )
+        return "None"
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        future_docs = executor.submit(get_docs)
+        future_summary = executor.submit(get_history_summary)
+        
+        context_docs = future_docs.result()
+        history_summary = future_summary.result()
+
     context = "\n".join([doc.page_content for doc in context_docs])
     sources = list(set(
      os.path.basename(doc.metadata.get("source_file", doc.metadata.get("source", "Unknown")))
@@ -543,7 +565,7 @@ else:
      st.session_state.prompt,
      query,
      context,
-     chat_history=chat_history_list
+     history_summary=history_summary
     )
     
     if response.get("is_internet_search"):

@@ -115,8 +115,8 @@ TASK_MODEL_ROUTES = {
 
     # Summarizes chat history to save tokens for the main QA bot
     "history_summarization": ModelRoute(
-        provider="mistral",
-        model_id="mistral-small-2506",
+        provider="groq",
+        model_id="llama-3.1-8b-instant",
         temperature=0.0,
         max_tokens=500,
     ),
@@ -259,20 +259,10 @@ def load_model_router() -> StudyAssistantRouter:
 
 from llm.prompt import load_verifier_prompt, load_history_summarizer_prompt
 
-def answer_question(router, prompt, query: str, context: str, chat_history: list[dict[str, str]] = None) -> dict[str, Any]:
+def answer_question(router, prompt, query: str, context: str, history_summary: str = "None") -> dict[str, Any]:
     """Full Q&A pipeline: generate an answer, then verify it for accuracy."""
     
-    # Step 1: Summarize chat history if available
-    history_summary = "None"
-    if chat_history and len(chat_history) > 0:
-        history_str = "\\n".join([f"{msg['role'].capitalize()}: {msg['content']}" for msg in chat_history[-6:]])
-        summarizer_prompt = load_history_summarizer_prompt()
-        history_summary = router.complete(
-            "history_summarization",
-            [{"role": "user", "content": summarizer_prompt.format(chat_history=history_str)}]
-        )
-        
-    # Step 2: Get a draft answer from the primary Q&A model
+    # Step 1: Get a draft answer from the primary Q&A model
     # We no longer pass the full chat_history array to save tokens
     messages = [
         {"role": "user", "content": prompt.format(query=query, content=context, history_summary=history_summary)}
