@@ -75,7 +75,7 @@ TASK_MODEL_ROUTES = {
         provider="mistral",
         model_id="ministral-8b-2512",
         temperature=0.4,
-        max_tokens=4000,
+        max_tokens=None,
         fallback_task="feature_fallback",
     ),
 
@@ -84,7 +84,7 @@ TASK_MODEL_ROUTES = {
         provider="mistral",
         model_id="ministral-8b-2512",
         temperature=0.4,
-        max_tokens=4000,
+        max_tokens=None,
         fallback_task="feature_fallback",
     ),
 
@@ -93,7 +93,7 @@ TASK_MODEL_ROUTES = {
         provider="mistral",
         model_id="open-mistral-nemo",
         temperature=0.35,
-        max_tokens=8000,
+        max_tokens=None,
         fallback_task="feature_fallback",
     ),
 
@@ -110,7 +110,7 @@ TASK_MODEL_ROUTES = {
         provider="groq",
         model_id="meta-llama/llama-4-scout-17b-16e-instruct",
         temperature=0.35,
-        max_tokens=4000,
+        max_tokens=None,
     ),
 }
 
