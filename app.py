@@ -261,7 +261,7 @@ with st.sidebar:
 
  process_btn = st.button(
   " Process Documents",
-  use_container_width=True,
+  width="stretch",
   disabled=not uploaded_files,
   type="primary",
  )
@@ -273,14 +273,14 @@ with st.sidebar:
 
   gen_col1, gen_col2, gen_col3 = st.columns(3)
   with gen_col1:
-   st.image("images/notes.png", use_container_width=True)
-   notes_btn = st.button("Notes", use_container_width=True, help="Generate Notes", key="btn_notes")
+   st.image("images/notes.png", width="stretch")
+   notes_btn = st.button("Notes", width="stretch", help="Generate Notes", key="btn_notes")
   with gen_col2:
-   st.image("images/quiz.png", use_container_width=True)
-   quiz_btn = st.button("Quiz", use_container_width=True, help="Generate MCQ Quiz", key="btn_quiz")
+   st.image("images/quiz.png", width="stretch")
+   quiz_btn = st.button("Quiz", width="stretch", help="Generate MCQ Quiz", key="btn_quiz")
   with gen_col3:
-   st.image("images/cards.png", use_container_width=True)
-   flash_btn = st.button("Cards", use_container_width=True, help="Generate Flashcards", key="btn_cards")
+   st.image("images/cards.png", width="stretch")
+   flash_btn = st.button("Cards", width="stretch", help="Generate Flashcards", key="btn_cards")
 
  else:
   notes_btn = False
@@ -338,7 +338,7 @@ with st.sidebar:
     data=st.session_state.generated_notes_pdf,
     file_name="study_notes.pdf",
     mime="application/pdf",
-    use_container_width=True,
+    width="stretch",
    )
   if st.session_state.generated_quiz_pdf:
    st.download_button(
@@ -346,7 +346,7 @@ with st.sidebar:
     data=st.session_state.generated_quiz_pdf,
     file_name="mcq_quiz.pdf",
     mime="application/pdf",
-    use_container_width=True,
+    width="stretch",
    )
   if st.session_state.generated_flashcards_pdf:
    st.download_button(
@@ -354,18 +354,18 @@ with st.sidebar:
     data=st.session_state.generated_flashcards_pdf,
     file_name="flashcards.pdf",
     mime="application/pdf",
-    use_container_width=True,
+    width="stretch",
    )
 
  st.markdown("---")
  reset_col1, reset_col2 = st.columns(2)
  with reset_col1:
-  if st.button(" Clear Chat", use_container_width=True):
+  if st.button(" Clear Chat", width="stretch"):
    st.session_state.messages = []
    st.session_state.active_tab = "chat"
    st.rerun()
  with reset_col2:
-  if st.button(" Reset All", use_container_width=True):
+  if st.button(" Reset All", width="stretch"):
    for key in list(st.session_state.keys()):
     del st.session_state[key]
    st.rerun()
@@ -586,7 +586,7 @@ else:
     data=st.session_state.generated_notes_pdf,
     file_name="study_notes.pdf",
     mime="application/pdf",
-    use_container_width=True,
+    width="stretch",
     type="primary",
    )
   else:
@@ -599,7 +599,7 @@ else:
      <p style="color: #9ca3af; margin-bottom: 1.5rem;">Generate AI study notes from your documents.</p>
     """, unsafe_allow_html=True)
     
-    if st.button(" Generate Study Notes", use_container_width=True, type="primary", key="main_notes_btn"):
+    if st.button(" Generate Study Notes", width="stretch", type="primary", key="main_notes_btn"):
      _run_generation(
       "notes",
       generate_notes_content,
@@ -639,7 +639,7 @@ else:
     data=st.session_state.generated_quiz_pdf,
     file_name="mcq_quiz.pdf",
     mime="application/pdf",
-    use_container_width=True,
+    width="stretch",
     type="primary",
    )
   else:
@@ -652,7 +652,7 @@ else:
      <p style="color: #9ca3af; margin-bottom: 1.5rem;">Generate an interactive MCQ practice quiz from your documents.</p>
     """, unsafe_allow_html=True)
     
-    if st.button(" Generate Practice Quiz", use_container_width=True, type="primary", key="main_quiz_btn"):
+    if st.button(" Generate Practice Quiz", width="stretch", type="primary", key="main_quiz_btn"):
      _run_generation(
       "quiz",
       generate_quiz_content,
@@ -692,7 +692,7 @@ else:
     data=st.session_state.generated_flashcards_pdf,
     file_name="flashcards.pdf",
     mime="application/pdf",
-    use_container_width=True,
+    width="stretch",
     type="primary",
    )
   else:
@@ -705,7 +705,7 @@ else:
      <p style="color: #9ca3af; margin-bottom: 1.5rem;">Generate interactive study flashcards from your documents.</p>
     """, unsafe_allow_html=True)
     
-    if st.button(" Generate Flashcards", use_container_width=True, type="primary", key="main_flash_btn"):
+    if st.button(" Generate Flashcards", width="stretch", type="primary", key="main_flash_btn"):
      _run_generation(
       "flashcards",
       generate_flashcards_content,
