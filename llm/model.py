@@ -282,6 +282,7 @@ def answer_question(router, prompt, query: str, context: str, history_summary: s
     score = verification.get("hallucination_score")
     is_answerable = verification.get("is_answerable_from_context", True)
     is_related = verification.get("is_query_related_to_topics", True)
+    is_conversational = verification.get("is_conversational", False)
     
     if score is not None and score > 60:
         cannot_answer = True
@@ -289,7 +290,12 @@ def answer_question(router, prompt, query: str, context: str, history_summary: s
         cannot_answer = True
 
     if cannot_answer:
-        if is_related:
+        if is_conversational:
+            verification["answer"] = draft_answer
+            verification["is_internet_search"] = False
+            verification["reason"] = "Query is conversational."
+            verification["hallucination_score"] = 0
+        elif is_related:
             # Fallback to internet search
             search_prompt = f"The user asked: '{query}'. The available documents do not contain the answer. Please search the internet to find a detailed answer, and include examples if applicable."
             try:
@@ -363,6 +369,7 @@ def _parse_verifier_response(raw_response: str, draft_answer: str) -> dict[str, 
         "hallucination_score": score,
         "is_answerable_from_context": parsed.get("is_answerable_from_context", True),
         "is_query_related_to_topics": parsed.get("is_query_related_to_topics", True),
+        "is_conversational": parsed.get("is_conversational", False),
         "reason": parsed.get("reason", ""),
     }
 

@@ -34,44 +34,43 @@ import streamlit.components.v1 as components
 import base64
 import uuid
 
-def render_copy_button(text_to_copy: str):
-    text_b64 = base64.b64encode(text_to_copy.encode('utf-8')).decode('utf-8')
-    btn_id = f"btn_{uuid.uuid4().hex[:8]}"
-    html = f"""
-    <div style="display: flex; justify-content: flex-end; align-items: flex-start;">
-      <button id="{btn_id}" onclick="copyTextB64_{btn_id}(this, '{text_b64}')" title="Copy text"
-              style="background: transparent; border: none; color: #9b9b9b; cursor: pointer; padding: 4px; transition: color 0.2s;"
-              onmouseover="this.style.color='#ECECEC'" 
-              onmouseout="this.style.color='#9b9b9b'">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        </svg>
-      </button>
-    </div>
+def inject_custom_js():
+    js = """
     <script>
-    function copyTextB64_{btn_id}(btn, b64) {{
-        const text = decodeURIComponent(escape(window.atob(b64)));
-        if (navigator.clipboard && window.isSecureContext) {{
-            navigator.clipboard.writeText(text).then(() => showSuccess_{btn_id}(btn));
-        }} else {{
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            document.body.appendChild(textArea);
-            textArea.select();
-            try {{ document.execCommand('copy'); showSuccess_{btn_id}(btn); }} catch (err) {{}}
-            document.body.removeChild(textArea);
-        }}
-    }}
-    function showSuccess_{btn_id}(btn) {{
-        const oldHtml = btn.innerHTML;
-        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-        setTimeout(() => {{ btn.innerHTML = oldHtml; }}, 2000);
-    }}
+    const parentDoc = window.parent.document;
+    function initCopyButtons() {
+        const btns = parentDoc.querySelectorAll('.my-copy-btn:not(.listening)');
+        btns.forEach(btn => {
+            btn.classList.add('listening');
+            btn.onclick = function() {
+                const b64 = this.getAttribute('data-text-b64');
+                const text = decodeURIComponent(escape(window.atob(b64)));
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        const oldHtml = this.innerHTML;
+                        this.innerHTML = "✅";
+                        setTimeout(() => { this.innerHTML = oldHtml; }, 2000);
+                    });
+                }
+            };
+        });
+    }
+    setInterval(initCopyButtons, 1000);
     </script>
     """
-    st.html(html)
+    components.html(js, height=0, width=0)
+
+def get_copy_btn_html(text_to_copy: str) -> str:
+    text_b64 = base64.b64encode(text_to_copy.encode('utf-8')).decode('utf-8')
+    return f"""
+    <div class="my-copy-btn" data-text-b64="{text_b64}" title="Copy text"
+         style="position: absolute; right: 12px; top: 12px; cursor: pointer; color: #9b9b9b; background: rgba(30,30,30,0.6); border-radius: 4px; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10; transition: color 0.2s;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+    </div>
+    """
 
 # ── Page Config ──────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -272,6 +271,7 @@ st.markdown("""
  <p>Upload multiple PDFs — Chat, generate Notes, Quizzes & Flashcards with AI</p>
 </div>
 """, unsafe_allow_html=True)
+inject_custom_js()
 
 # ── Sidebar ──────────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -534,26 +534,18 @@ else:
   # Display chat messages
   for msg in st.session_state.messages:
    if msg["role"] == "user":
-    col1, col2 = st.columns([0.9, 0.1])
-    with col1:
-     st.markdown(
-      f'<div class="user-bubble"> {msg["content"]}</div>',
-      unsafe_allow_html=True,
-     )
-    with col2:
-     render_copy_button(msg["content"])
+    st.markdown(
+     f'<div class="user-bubble" style="position: relative;"> {msg["content"]}\n{get_copy_btn_html(msg["content"])}</div>',
+     unsafe_allow_html=True,
+    )
    else:
-    html_content = f'<div class="assistant-bubble">\n{msg["content"]}\n'
+    html_content = f'<div class="assistant-bubble" style="position: relative;">\n{msg["content"]}\n'
     if "sources" in msg and msg["sources"]:
      sources_html = " ".join([f'<span class="source-badge">{s}</span>' for s in msg["sources"]])
      html_content += f'<div style="margin-top: 1rem; color: #9b9b9b; font-size: 0.85rem;">Sources: {sources_html}</div>'
-    html_content += '</div>'
+    html_content += f'{get_copy_btn_html(msg["content"])}</div>'
     
-    col1, col2 = st.columns([0.9, 0.1])
-    with col1:
-     st.markdown(html_content, unsafe_allow_html=True)
-    with col2:
-     render_copy_button(msg["content"])
+    st.markdown(html_content, unsafe_allow_html=True)
 
   # Chat input
   if query := st.chat_input("Ask a question about your documents..."):
@@ -562,14 +554,10 @@ else:
 
    st.session_state.messages.append({"role": "user", "content": query})
    
-   col1, col2 = st.columns([0.9, 0.1])
-   with col1:
-    st.markdown(
-     f'<div class="user-bubble"> {query}</div>',
-     unsafe_allow_html=True,
-    )
-   with col2:
-    render_copy_button(query)
+   st.markdown(
+    f'<div class="user-bubble" style="position: relative;"> {query}\n{get_copy_btn_html(query)}</div>',
+    unsafe_allow_html=True,
+   )
 
    with st.spinner("🔎 Searching across your documents..."):
     from concurrent.futures import ThreadPoolExecutor

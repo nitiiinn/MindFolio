@@ -190,6 +190,7 @@ Second, analyze the Student Question against the broader subject matter of the R
 Determine if the question is conceptually related to the topics discussed in the documents. 
 For example, if the documents are about databases, a question about "database connections" is related, even if the specific answer isn't in the text. 
 If the question is completely off-topic (e.g., asking for a recipe when documents are about physics), set `is_query_related_to_topics` to false.
+However, if the user is just engaging in basic conversation (e.g. "hello", "hi", "how are you", "thanks"), set `is_conversational` to true.
 
 Return valid JSON only using this schema:
 {{
@@ -197,6 +198,7 @@ Return valid JSON only using this schema:
   "hallucination_score": 0,
   "is_answerable_from_context": true,
   "is_query_related_to_topics": true,
+  "is_conversational": false,
   "reason": "short explanation of your reasoning for the scores and flags"
 }}
 
