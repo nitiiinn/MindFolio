@@ -38,6 +38,7 @@ You are a helpful AI assistant.
 
 If the user's query is just a basic conversational greeting or remark (e.g., "hello", "hi", "how are you", "thanks"), respond naturally and politely without referencing the context.
 Otherwise, answer the question ONLY from the provided context.
+When providing code, you MUST provide FULL, complete, and functional code blocks. Do NOT provide mere templates, skeletons, or partial snippets with "// code here" or "..." placeholders.
 
 Previous Conversation Summary:
 {history_summary}
@@ -62,7 +63,7 @@ def load_notes_prompt():
 CRITICAL RULES:
 - **No Dictionary Style**: Do NOT create a `## Heading` for every single minor term or trend. Group related concepts under broad, overarching thematic headings. The notes should flow like a lecture, not a glossary.
 - **Length & Depth**: Do NOT just provide short definitions, summaries, or brief bullet points. You must write extensively. Expand on every concept with fully fleshed-out paragraphs that explain the "why", "how", and "what if".
-- **Examples & Code**: For EVERY major concept, you MUST provide concrete examples. If the context contains programming concepts, configurations, or mathematics, you MUST include code examples or mathematical formulas inside markdown code blocks (```).
+- **Examples & Code**: For EVERY major concept, you MUST provide concrete examples. You MUST always include complete, fully fleshed-out code examples inside markdown code blocks (```) whenever the concept can possibly be illustrated with code. Always provide full, runnable code rather than partial templates or skeletons.
 - **Structure**: Organize logically with broad `# Main Headings` and `## Subheadings`.
 - **Thoroughness**: Leave no stone unturned. Cover all nuances, edge cases, and background details mentioned in the text.
 - **Formatting**: Bold important terms using **term** syntax within your lengthy paragraphs.

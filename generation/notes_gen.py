@@ -108,6 +108,12 @@ def build_notes_pdf(notes_data):
         fontName="Helvetica-Bold",
         borderWidth=0, borderPadding=0,
     )
+    subheading_style = ParagraphStyle(
+        "NotesSubheading", parent=styles["Heading3"],
+        fontSize=12, textColor=colors.HexColor("#1f2937"),
+        spaceBefore=12, spaceAfter=4,
+        fontName="Helvetica-Bold",
+    )
     body_style = ParagraphStyle(
         "NotesBody", parent=styles["Normal"],
         fontSize=10.5, textColor=colors.HexColor("#1f2937"),
@@ -120,9 +126,9 @@ def build_notes_pdf(notes_data):
     )
     code_style = ParagraphStyle(
         "NotesCode", parent=styles["Code"],
-        fontSize=9, textColor=colors.HexColor("#e2e8f0"),
-        backColor=colors.HexColor("#1e1e24"),
-        borderPadding=8, borderWidth=1, borderColor=colors.HexColor("#1e1e24"),
+        fontSize=9, textColor=colors.HexColor("#1f2937"),
+        backColor=colors.HexColor("#f3f4f6"),
+        borderPadding=8, borderWidth=1, borderColor=colors.HexColor("#e5e7eb"),
         leading=13, spaceAfter=10, spaceBefore=4,
         fontName="Courier"
     )
@@ -176,8 +182,11 @@ def build_notes_pdf(notes_data):
             ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
             ("ROUNDEDCORNERS", [6, 6, 6, 6]),
         ]))
+        header_table.keepWithNext = True
         elements.append(header_table)
-        elements.append(Spacer(1, 6))
+        spacer = Spacer(1, 6)
+        spacer.keepWithNext = True
+        elements.append(spacer)
 
         # Section body
         lines = section_body.split("\n")
@@ -209,7 +218,12 @@ def build_notes_pdf(notes_data):
             # Clean markdown inline code markers
             parsed_line = re.sub(r'`(.*?)`', r'<font name="Courier" color="#10b981">\1</font>', parsed_line)
             
-            if parsed_line.startswith("- "):
+            if parsed_line.startswith("### "):
+                content = parsed_line[4:].strip()
+                p = Paragraph(content, subheading_style)
+                p.keepWithNext = True
+                elements.append(p)
+            elif parsed_line.startswith("- "):
                 content = parsed_line[2:].strip()
                 elements.append(Paragraph(f"• {content}", bullet_style))
             else:

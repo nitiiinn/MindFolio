@@ -78,7 +78,7 @@ def inject_custom_js():
     setInterval(initCopyButtons, 1000);
     </script>
     """
-    components.html(js, height=0, width=0)
+    st.html(js)
 
 def get_copy_btn_html(text_to_copy: str) -> str:
     text_b64 = base64.b64encode(text_to_copy.encode('utf-8')).decode('utf-8')
@@ -271,6 +271,7 @@ defaults = {
  "generated_quiz_pdf": None,
  "generated_flashcards_pdf": None,
  "active_tab": "chat",
+ "uploader_key": 0,
 }
 for key, val in defaults.items():
  if key not in st.session_state:
@@ -324,7 +325,7 @@ with st.sidebar:
   type=["pdf"],
   accept_multiple_files=True,
   help="Upload one or more PDF files to analyze",
-  key="pdf_uploader",
+  key=f"pdf_uploader_{st.session_state.uploader_key}",
  )
 
  if uploaded_files:
@@ -427,8 +428,10 @@ with st.sidebar:
    st.rerun()
  with reset_col2:
   if st.button(" Reset All", use_container_width=True):
+   new_uploader_key = st.session_state.get("uploader_key", 0) + 1
    for key in list(st.session_state.keys()):
     del st.session_state[key]
+   st.session_state["uploader_key"] = new_uploader_key
    st.rerun()
 
 
@@ -547,11 +550,11 @@ else:
   for msg in st.session_state.messages:
    if msg["role"] == "user":
     st.markdown(
-     f'<div class="user-bubble" style="position: relative;">{msg["content"]}{get_copy_btn_html(msg["content"])}</div>',
+     f'<div class="user-bubble" style="position: relative;">{msg["content"]}\n\n{get_copy_btn_html(msg["content"])}</div>',
      unsafe_allow_html=True,
     )
    else:
-    html_content = f'<div class="assistant-bubble" style="position: relative;">{msg["content"]}'
+    html_content = f'<div class="assistant-bubble" style="position: relative;">{msg["content"]}\n\n'
     if "sources" in msg and msg["sources"]:
      sources_html = " ".join([f'<span class="source-badge">{s}</span>' for s in msg["sources"]])
      html_content += f'<div style="margin-top: 1rem; color: #9b9b9b; font-size: 0.85rem;">Sources: {sources_html}</div>'
@@ -567,7 +570,7 @@ else:
    st.session_state.messages.append({"role": "user", "content": query})
    
    st.markdown(
-    f'<div class="user-bubble" style="position: relative;">{query}{get_copy_btn_html(query)}</div>',
+    f'<div class="user-bubble" style="position: relative;">{query}\n\n{get_copy_btn_html(query)}</div>',
     unsafe_allow_html=True,
    )
 
