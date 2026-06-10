@@ -45,12 +45,32 @@ def inject_custom_js():
             btn.onclick = function() {
                 const b64 = this.getAttribute('data-text-b64');
                 const text = decodeURIComponent(escape(window.atob(b64)));
+                const oldHtml = this.innerHTML;
+                
+                const showSuccess = () => {
+                    this.innerHTML = "✅";
+                    setTimeout(() => { this.innerHTML = oldHtml; }, 2000);
+                };
+
+                const fallbackCopy = (txt) => {
+                    const textArea = parentDoc.createElement("textarea");
+                    textArea.value = txt;
+                    textArea.style.position = "fixed";
+                    parentDoc.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        parentDoc.execCommand('copy');
+                        showSuccess();
+                    } catch (err) {
+                        console.error('Fallback copy failed', err);
+                    }
+                    parentDoc.body.removeChild(textArea);
+                };
+
                 if (navigator.clipboard && window.isSecureContext) {
-                    navigator.clipboard.writeText(text).then(() => {
-                        const oldHtml = this.innerHTML;
-                        this.innerHTML = "✅";
-                        setTimeout(() => { this.innerHTML = oldHtml; }, 2000);
-                    });
+                    navigator.clipboard.writeText(text).then(showSuccess).catch(() => fallbackCopy(text));
+                } else {
+                    fallbackCopy(text);
                 }
             };
         });
