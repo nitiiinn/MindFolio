@@ -176,23 +176,32 @@ Rewritten Queries:"""
 
 
 def load_verifier_prompt():
-    """Prompt that audits an answer against retrieved context."""
+    """Prompt that audits an answer against retrieved context and determines relatedness."""
 
     return SimplePrompt(
-        template="""You are a factual verifier for a study assistant.
+        template="""You are a factual verifier and query analyzer for a study assistant.
 
-Audit the draft answer against the retrieved context only. If any part of the draft answer is unsupported, fix it so the final answer is fully grounded in the context.
+First, audit the draft answer against the retrieved context only. 
+If the draft answer states that the information is not in the context, or if it hallucinates, set `is_answerable_from_context` to false. 
+Otherwise, if any part of the draft answer is unsupported, fix it so the final answer is fully grounded in the context, and set `is_answerable_from_context` to true.
+
+Second, analyze the Student Question against the broader subject matter of the Retrieved Context. 
+Determine if the question is conceptually related to the topics discussed in the documents. 
+For example, if the documents are about databases, a question about "database connections" is related, even if the specific answer isn't in the text. 
+If the question is completely off-topic (e.g., asking for a recipe when documents are about physics), set `is_query_related_to_topics` to false.
 
 Return valid JSON only using this schema:
 {{
-  "answer": "corrected grounded answer",
+  "answer": "corrected grounded answer (or a statement that it cannot be answered)",
   "hallucination_score": 0,
-  "reason": "short explanation of what was corrected or confirmed"
+  "is_answerable_from_context": true,
+  "is_query_related_to_topics": true,
+  "reason": "short explanation of your reasoning for the scores and flags"
 }}
 
-Scoring guidance:
+Scoring guidance for hallucination_score:
 - 0 means the draft answer is fully grounded in the context.
-- 100 means the draft answer is almost entirely unsupported.
+- 100 means the draft answer is entirely unsupported or made up. (If the draft answer correctly admits it doesn't know, the hallucination score should be 0, but is_answerable_from_context should be false).
 
 Student Question:
 {query}

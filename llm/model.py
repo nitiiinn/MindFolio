@@ -276,36 +276,39 @@ def answer_question(router, prompt, query: str, context: str, history_summary: s
     verification = router.verify_answer(query, context, draft_answer)
     verification["draft_answer"] = draft_answer
 
-    # Step 3: Check if the answer cannot be found in the context
-    ans_lower = draft_answer.lower()
+    # Step 3: Check if the answer cannot be found in the context based on reasoning flags
     cannot_answer = False
     
     score = verification.get("hallucination_score")
+    is_answerable = verification.get("is_answerable_from_context", True)
+    is_related = verification.get("is_query_related_to_topics", True)
+    
     if score is not None and score > 60:
         cannot_answer = True
-    elif any(phrase in ans_lower for phrase in [
-        "cannot answer", "do not contain", "does not contain",
-        "provided context does not", "not mentioned", "i don't know",
-        "no information provided", "not provided in the context", 
-        "is no information"
-    ]):
+    elif is_answerable is False:
         cannot_answer = True
 
     if cannot_answer:
-        # Fallback to internet search
-        search_prompt = f"The user asked: '{query}'. The available documents do not contain the answer. Please search the internet to find a detailed answer, and include examples if applicable."
-        try:
-            internet_answer = router.complete(
-                "internet_search",
-                [{"role": "user", "content": search_prompt}]
-            )
-            verification["answer"] = internet_answer
-            verification["is_internet_search"] = True
-            verification["reason"] = "Answered using Groq Compound internet search because it was not in the documents."
+        if is_related:
+            # Fallback to internet search
+            search_prompt = f"The user asked: '{query}'. The available documents do not contain the answer. Please search the internet to find a detailed answer, and include examples if applicable."
+            try:
+                internet_answer = router.complete(
+                    "internet_search",
+                    [{"role": "user", "content": search_prompt}]
+                )
+                verification["answer"] = internet_answer
+                verification["is_internet_search"] = True
+                verification["reason"] = "Answered using Groq Compound internet search because it was not in the documents but is related to the topic."
+                verification["hallucination_score"] = 0
+            except Exception as e:
+                # If search fails, we'll just fall back to the draft answer
+                pass
+        else:
+            verification["answer"] = "This question does not appear to be related to the provided documents. Please ask a question related to the uploaded context."
+            verification["is_internet_search"] = False
+            verification["reason"] = "Query rejected because it is off-topic."
             verification["hallucination_score"] = 0
-        except Exception as e:
-            # If search fails, we'll just fall back to the draft answer
-            pass
 
     return verification
 
@@ -343,6 +346,8 @@ def _parse_verifier_response(raw_response: str, draft_answer: str) -> dict[str, 
         return {
             "answer": draft_answer,
             "hallucination_score": None,
+            "is_answerable_from_context": True,
+            "is_query_related_to_topics": True,
             "reason": "Verifier returned non-JSON output; using the draft answer.",
         }
 
@@ -356,6 +361,8 @@ def _parse_verifier_response(raw_response: str, draft_answer: str) -> dict[str, 
     return {
         "answer": answer,
         "hallucination_score": score,
+        "is_answerable_from_context": parsed.get("is_answerable_from_context", True),
+        "is_query_related_to_topics": parsed.get("is_query_related_to_topics", True),
         "reason": parsed.get("reason", ""),
     }
 
