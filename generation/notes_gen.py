@@ -7,7 +7,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
-    PageBreak, HRFlowable
+    PageBreak, HRFlowable, Preformatted
 )
 
 from llm.prompt import load_notes_prompt
@@ -118,6 +118,14 @@ def build_notes_pdf(notes_data):
         leftIndent=20, bulletIndent=8,
         spaceAfter=3,
     )
+    code_style = ParagraphStyle(
+        "NotesCode", parent=styles["Code"],
+        fontSize=9, textColor=colors.HexColor("#e2e8f0"),
+        backColor=colors.HexColor("#1e1e24"),
+        borderPadding=8, borderWidth=1, borderColor=colors.HexColor("#1e1e24"),
+        leading=13, spaceAfter=10, spaceBefore=4,
+        fontName="Courier"
+    )
 
     elements = []
 
@@ -172,17 +180,44 @@ def build_notes_pdf(notes_data):
         elements.append(Spacer(1, 6))
 
         # Section body
-        for line in section_body.split("\n"):
-            line = line.strip()
-            if not line:
+        lines = section_body.split("\n")
+        in_code_block = False
+        code_lines = []
+
+        for line in lines:
+            stripped_line = line.strip()
+            
+            if stripped_line.startswith("```"):
+                if in_code_block:
+                    in_code_block = False
+                    code_content = "\n".join(code_lines)
+                    elements.append(Preformatted(code_content, code_style))
+                    code_lines = []
+                else:
+                    in_code_block = True
                 continue
+                
+            if in_code_block:
+                code_lines.append(line)
+                continue
+
+            if not stripped_line:
+                continue
+                
             # Clean markdown bold markers
-            line = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', line)
-            if line.startswith("- "):
-                content = line[2:].strip()
+            parsed_line = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', stripped_line)
+            # Clean markdown inline code markers
+            parsed_line = re.sub(r'`(.*?)`', r'<font name="Courier" color="#10b981">\1</font>', parsed_line)
+            
+            if parsed_line.startswith("- "):
+                content = parsed_line[2:].strip()
                 elements.append(Paragraph(f"• {content}", bullet_style))
             else:
-                elements.append(Paragraph(line, body_style))
+                elements.append(Paragraph(parsed_line, body_style))
+
+        if in_code_block and code_lines:
+            code_content = "\n".join(code_lines)
+            elements.append(Preformatted(code_content, code_style))
 
         elements.append(Spacer(1, 10))
 

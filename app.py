@@ -75,7 +75,7 @@ def render_copy_button(text_to_copy: str):
     </body>
     </html>
     """
-    components.html(html, height=30)
+    st.html(html)
 
 # ── Page Config ──────────────────────────────────────────────────────────────
 st.set_page_config(
