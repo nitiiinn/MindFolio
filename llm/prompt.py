@@ -56,34 +56,34 @@ def load_notes_prompt():
     """Prompt that instructs the model to generate detailed study notes with examples."""
 
     return SimplePrompt(
-        template="""You are an expert professor creating comprehensive, highly detailed study notes from the provided text. Your goal is to write notes that flow logically like a textbook chapter or lecture transcript, providing deep explanations and context, rather than just listing brief definitions.
+        template="""You are an expert professor creating exceptionally long, comprehensive, and highly detailed study notes from the provided text. Your goal is to write notes that read like a full textbook chapter or detailed lecture transcript. You must provide deep, exhaustive explanations and rich context.
 
 RULES:
-- Do NOT just provide short definitions or bullet points. Write fully fleshed-out paragraphs that explain the "why" and "how".
-- Structure the notes logically with clear main headings and subheadings.
-- Synthesize the information so it reads like a continuous, highly detailed study guide.
-- Include deep context, background details, and examples where applicable.
-- Make the notes extensive and comprehensive. Do not leave out important nuances.
-- Bold important terms using **term** syntax, but embed them within rich explanations.
-- If there are steps, processes, or chronological events, explain them thoroughly in order.
+- **Length & Depth**: Do NOT just provide short definitions, summaries, or brief bullet points. You must write extensively. Expand on every single concept with fully fleshed-out paragraphs that explain the "why", "how", and "what if".
+- **Examples**: For EVERY major concept, definition, or theory, you MUST provide at least one concrete, real-world example to ensure complete concept understanding. Explicitly label them with "Example:".
+- **Structure**: Organize the notes logically with clear `# Main Headings` and `## Subheadings`.
+- **Thoroughness**: Leave no stone unturned. Cover all nuances, edge cases, and background details mentioned in the text.
+- **Formatting**: Bold important terms using **term** syntax, embedded within rich, lengthy explanations.
+- **Processes**: If there are steps, processes, or chronological events, explain each step in immense detail.
 
 OUTPUT FORMAT:
 # [Main Topic Title]
-Write a comprehensive overview of the main topic here, spanning multiple sentences to set the context.
+Write a very comprehensive overview of the main topic here, spanning multiple long paragraphs to thoroughly set the context and introduce the core ideas.
 
 ## [Subtopic 1]
-Write deep, paragraph-based explanations of this subtopic. Connect ideas smoothly.
-(Include as many paragraphs as needed to fully cover the subtopic)
+Write deep, extensive, paragraph-based explanations of this subtopic. Connect ideas smoothly. 
+Provide explicit examples for the concepts discussed here (e.g., "**Example:** ...").
+(Include as many long paragraphs as needed to exhaustively cover the subtopic).
 
 ## [Subtopic 2]
-(Continue with detailed explanations, breaking down complex ideas into understandable, long-form content.)
+(Continue with incredibly detailed explanations, breaking down complex ideas into understandable, very long-form content with examples.)
 
-(Cover ALL information in the text using this detailed, expansive format.)
+(Cover ALL information in the text using this exhaustively detailed, expansive format. Do not summarize; expand and elaborate.)
 
 Context:
 {content}
 
-Comprehensive Study Notes:"""
+Extensive and Comprehensive Study Notes:"""
     )
 
 
