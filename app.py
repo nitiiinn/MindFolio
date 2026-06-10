@@ -534,11 +534,12 @@ else:
   # Display chat messages
   for msg in st.session_state.messages:
    if msg["role"] == "user":
-    st.markdown(
-     f'<div class="user-bubble"> {msg["content"]}</div>',
-     unsafe_allow_html=True,
-    )
-    col1, col2 = st.columns([0.95, 0.05])
+    col1, col2 = st.columns([0.9, 0.1])
+    with col1:
+     st.markdown(
+      f'<div class="user-bubble"> {msg["content"]}</div>',
+      unsafe_allow_html=True,
+     )
     with col2:
      render_copy_button(msg["content"])
    else:
@@ -548,9 +549,10 @@ else:
      html_content += f'<div style="margin-top: 1rem; color: #9b9b9b; font-size: 0.85rem;">Sources: {sources_html}</div>'
     html_content += '</div>'
     
-    st.markdown(html_content, unsafe_allow_html=True)
-    col1, col2 = st.columns([0.05, 0.95])
+    col1, col2 = st.columns([0.9, 0.1])
     with col1:
+     st.markdown(html_content, unsafe_allow_html=True)
+    with col2:
      render_copy_button(msg["content"])
 
   # Chat input
@@ -559,11 +561,13 @@ else:
    chat_history_str = "\n".join([f"{m['role'].capitalize()}: {m['content']}" for m in chat_history_list[-4:]])
 
    st.session_state.messages.append({"role": "user", "content": query})
-   st.markdown(
-    f'<div class="user-bubble"> {query}</div>',
-    unsafe_allow_html=True,
-   )
-   col1, col2 = st.columns([0.95, 0.05])
+   
+   col1, col2 = st.columns([0.9, 0.1])
+   with col1:
+    st.markdown(
+     f'<div class="user-bubble"> {query}</div>',
+     unsafe_allow_html=True,
+    )
    with col2:
     render_copy_button(query)
 
