@@ -31,49 +31,45 @@ load_dotenv()
 import json
 import streamlit.components.v1 as components
 
+import base64
+import uuid
+
 def render_copy_button(text_to_copy: str):
-    text_json = json.dumps(text_to_copy)
+    text_b64 = base64.b64encode(text_to_copy.encode('utf-8')).decode('utf-8')
+    btn_id = f"btn_{uuid.uuid4().hex[:8]}"
     html = f"""
-    <html>
-    <head>
-    <style>
-      body {{ margin: 0; padding: 0; background: transparent; overflow: hidden; display: flex; align-items: flex-start; justify-content: center; }}
-      .copy-btn {{ background: transparent; border: none; color: #9b9b9b; cursor: pointer; padding: 4px; transition: color 0.2s; }}
-      .copy-btn:hover {{ color: #ECECEC; }}
-    </style>
-    </head>
-    <body>
-      <button class="copy-btn" onclick='copyToClipboard(this)' title="Copy text">
+    <div style="display: flex; justify-content: flex-end; align-items: flex-start;">
+      <button id="{btn_id}" onclick="copyTextB64_{btn_id}(this, '{text_b64}')" title="Copy text"
+              style="background: transparent; border: none; color: #9b9b9b; cursor: pointer; padding: 4px; transition: color 0.2s;"
+              onmouseover="this.style.color='#ECECEC'" 
+              onmouseout="this.style.color='#9b9b9b'">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
         </svg>
       </button>
-      <script>
-      function copyToClipboard(btn) {{
-          const text = {text_json};
-          if (navigator.clipboard) {{
-              navigator.clipboard.writeText(text).then(() => showSuccess(btn)).catch(() => fallback(text, btn));
-          }} else {{
-              fallback(text, btn);
-          }}
-      }}
-      function fallback(text, btn) {{
-          const textArea = document.createElement("textarea");
-          textArea.value = text;
-          document.body.appendChild(textArea);
-          textArea.select();
-          try {{ document.execCommand('copy'); showSuccess(btn); }} catch (err) {{}}
-          document.body.removeChild(textArea);
-      }}
-      function showSuccess(btn) {{
-          const oldHtml = btn.innerHTML;
-          btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-          setTimeout(() => {{ btn.innerHTML = oldHtml; }}, 2000);
-      }}
-      </script>
-    </body>
-    </html>
+    </div>
+    <script>
+    function copyTextB64_{btn_id}(btn, b64) {{
+        const text = decodeURIComponent(escape(window.atob(b64)));
+        if (navigator.clipboard && window.isSecureContext) {{
+            navigator.clipboard.writeText(text).then(() => showSuccess_{btn_id}(btn));
+        }} else {{
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {{ document.execCommand('copy'); showSuccess_{btn_id}(btn); }} catch (err) {{}}
+            document.body.removeChild(textArea);
+        }}
+    }}
+    function showSuccess_{btn_id}(btn) {{
+        const oldHtml = btn.innerHTML;
+        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        setTimeout(() => {{ btn.innerHTML = oldHtml; }}, 2000);
+    }}
+    </script>
     """
     st.html(html)
 
