@@ -187,8 +187,8 @@ First, audit the draft answer against the retrieved context only.
 If the draft answer states that the information is not in the context, or if it hallucinates, set `is_answerable_from_context` to false. 
 Otherwise, if any part of the draft answer is unsupported, fix it so the final answer is fully grounded in the context, and set `is_answerable_from_context` to true.
 
-Second, analyze the Student Question against the broader subject matter of the Retrieved Context. 
-Determine if the question is conceptually related to the topics discussed in the documents. 
+Second, analyze the Student Question against the broader subject matter of the Retrieved Context and the Conversation Summary. 
+Determine if the question is conceptually related to the topics discussed in the documents or follows up on the previous conversation. 
 For example, if the documents are about databases, a question about "database connections" is related, even if the specific answer isn't in the text. 
 If the question is completely off-topic (e.g., asking for a recipe when documents are about physics), set `is_query_related_to_topics` to false.
 However, if the user is just engaging in basic conversation (e.g. "hello", "hi", "how are you", "thanks"), set `is_conversational` to true.
@@ -206,6 +206,9 @@ Return valid JSON only using this schema:
 Scoring guidance for hallucination_score:
 - 0 means the draft answer is fully grounded in the context.
 - 100 means the draft answer is entirely unsupported or made up. (If the draft answer correctly admits it doesn't know, the hallucination score should be 0, but is_answerable_from_context should be false).
+
+Conversation Summary:
+{history_summary}
 
 Student Question:
 {query}

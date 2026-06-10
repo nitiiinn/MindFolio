@@ -186,19 +186,19 @@ class StudyAssistantRouter:
                 f"Model call failed for '{task_name}' using {route.model_id} via {route.provider}."
             ) from exc
 
-    def verify_answer(self, query: str, context: str, draft_answer: str) -> dict[str, Any]:
-        """Use a second AI model to check if the answer is grounded in the context.
-
-        Returns a dict with:
-          - answer: the corrected/confirmed answer
-          - hallucination_score: 0 (fully accurate) to 100 (completely made up)
-          - reason: why it was corrected or confirmed
+    def verify_answer(self, query: str, context: str, draft_answer: str, history_summary: str = "None") -> dict[str, Any]:
+        """Uses a strong factual model (Llama-3-70b or Scout) to verify the draft answer against the context.
+        
+        Returns a dict containing:
+        - answer: The corrected answer.
+        - hallucination_score: 0-100 score.
+        - is_answerable_from_context: boolean
         """
         verifier_prompt = load_verifier_prompt()
         raw_response = self.complete(
             "verifier_layer",
             [{"role": "user", "content": verifier_prompt.format(
-                query=query, content=context, answer=draft_answer,
+                query=query, content=context, answer=draft_answer, history_summary=history_summary,
             )}],
             temperature=0.0,
         )
@@ -272,8 +272,8 @@ def answer_question(router, prompt, query: str, context: str, history_summary: s
         "core_qa",
         messages,
     )
-    # Step 3: Verify the answer with a separate model
-    verification = router.verify_answer(query, context, draft_answer)
+    # Step 2: Verify the answer to ensure no hallucinations
+    verification = router.verify_answer(query, context, draft_answer, history_summary=history_summary)
     verification["draft_answer"] = draft_answer
 
     # Step 3: Check if the answer cannot be found in the context based on reasoning flags
