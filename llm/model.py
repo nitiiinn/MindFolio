@@ -285,7 +285,9 @@ def answer_question(router, prompt, query: str, context: str, history_summary: s
         cannot_answer = True
     elif any(phrase in ans_lower for phrase in [
         "cannot answer", "do not contain", "does not contain",
-        "provided context does not", "not mentioned", "i don't know"
+        "provided context does not", "not mentioned", "i don't know",
+        "no information provided", "not provided in the context", 
+        "is no information"
     ]):
         cannot_answer = True
 
