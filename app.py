@@ -28,6 +28,55 @@ from generation.flashcards_gen import generate_flashcards_content, build_flashca
 
 load_dotenv()
 
+import json
+import streamlit.components.v1 as components
+
+def render_copy_button(text_to_copy: str):
+    text_json = json.dumps(text_to_copy)
+    html = f"""
+    <html>
+    <head>
+    <style>
+      body {{ margin: 0; padding: 0; background: transparent; overflow: hidden; display: flex; align-items: flex-start; justify-content: center; }}
+      .copy-btn {{ background: transparent; border: none; color: #9b9b9b; cursor: pointer; padding: 4px; transition: color 0.2s; }}
+      .copy-btn:hover {{ color: #ECECEC; }}
+    </style>
+    </head>
+    <body>
+      <button class="copy-btn" onclick='copyToClipboard(this)' title="Copy text">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+      </button>
+      <script>
+      function copyToClipboard(btn) {{
+          const text = {text_json};
+          if (navigator.clipboard) {{
+              navigator.clipboard.writeText(text).then(() => showSuccess(btn)).catch(() => fallback(text, btn));
+          }} else {{
+              fallback(text, btn);
+          }}
+      }}
+      function fallback(text, btn) {{
+          const textArea = document.createElement("textarea");
+          textArea.value = text;
+          document.body.appendChild(textArea);
+          textArea.select();
+          try {{ document.execCommand('copy'); showSuccess(btn); }} catch (err) {{}}
+          document.body.removeChild(textArea);
+      }}
+      function showSuccess(btn) {{
+          const oldHtml = btn.innerHTML;
+          btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+          setTimeout(() => {{ btn.innerHTML = oldHtml; }}, 2000);
+      }}
+      </script>
+    </body>
+    </html>
+    """
+    components.html(html, height=30)
+
 # ── Page Config ──────────────────────────────────────────────────────────────
 st.set_page_config(
  page_title="MindFolio",
@@ -493,6 +542,9 @@ else:
      f'<div class="user-bubble"> {msg["content"]}</div>',
      unsafe_allow_html=True,
     )
+    col1, col2 = st.columns([0.95, 0.05])
+    with col2:
+     render_copy_button(msg["content"])
    else:
     html_content = f'<div class="assistant-bubble">\n{msg["content"]}\n'
     if "sources" in msg and msg["sources"]:
@@ -501,6 +553,9 @@ else:
     html_content += '</div>'
     
     st.markdown(html_content, unsafe_allow_html=True)
+    col1, col2 = st.columns([0.05, 0.95])
+    with col1:
+     render_copy_button(msg["content"])
 
   # Chat input
   if query := st.chat_input("Ask a question about your documents..."):
@@ -512,6 +567,9 @@ else:
     f'<div class="user-bubble"> {query}</div>',
     unsafe_allow_html=True,
    )
+   col1, col2 = st.columns([0.95, 0.05])
+   with col2:
+    render_copy_button(query)
 
    with st.spinner("🔎 Searching across your documents..."):
     from concurrent.futures import ThreadPoolExecutor
