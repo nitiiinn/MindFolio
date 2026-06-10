@@ -36,7 +36,8 @@ def load_prompt():
         template="""
 You are a helpful AI assistant.
 
-Answer the question ONLY from the provided context.
+If the user's query is just a basic conversational greeting or remark (e.g., "hello", "hi", "how are you", "thanks"), respond naturally and politely without referencing the context.
+Otherwise, answer the question ONLY from the provided context.
 
 Previous Conversation Summary:
 {history_summary}

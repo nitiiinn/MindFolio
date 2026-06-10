@@ -62,15 +62,7 @@ def inject_custom_js():
 
 def get_copy_btn_html(text_to_copy: str) -> str:
     text_b64 = base64.b64encode(text_to_copy.encode('utf-8')).decode('utf-8')
-    return f"""
-    <div class="my-copy-btn" data-text-b64="{text_b64}" title="Copy text"
-         style="position: absolute; right: 12px; top: 12px; cursor: pointer; color: #9b9b9b; background: rgba(30,30,30,0.6); border-radius: 4px; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10; transition: color 0.2s;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-      </svg>
-    </div>
-    """
+    return f"""<div class="my-copy-btn" data-text-b64="{text_b64}" title="Copy text" style="position: absolute; right: 12px; top: 12px; cursor: pointer; color: #9b9b9b; background: rgba(30,30,30,0.6); border-radius: 4px; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10; transition: color 0.2s;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></div>"""
 
 # ── Page Config ──────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -535,11 +527,11 @@ else:
   for msg in st.session_state.messages:
    if msg["role"] == "user":
     st.markdown(
-     f'<div class="user-bubble" style="position: relative;"> {msg["content"]}\n{get_copy_btn_html(msg["content"])}</div>',
+     f'<div class="user-bubble" style="position: relative;">{msg["content"]}{get_copy_btn_html(msg["content"])}</div>',
      unsafe_allow_html=True,
     )
    else:
-    html_content = f'<div class="assistant-bubble" style="position: relative;">\n{msg["content"]}\n'
+    html_content = f'<div class="assistant-bubble" style="position: relative;">{msg["content"]}'
     if "sources" in msg and msg["sources"]:
      sources_html = " ".join([f'<span class="source-badge">{s}</span>' for s in msg["sources"]])
      html_content += f'<div style="margin-top: 1rem; color: #9b9b9b; font-size: 0.85rem;">Sources: {sources_html}</div>'
@@ -555,7 +547,7 @@ else:
    st.session_state.messages.append({"role": "user", "content": query})
    
    st.markdown(
-    f'<div class="user-bubble" style="position: relative;"> {query}\n{get_copy_btn_html(query)}</div>',
+    f'<div class="user-bubble" style="position: relative;">{query}{get_copy_btn_html(query)}</div>',
     unsafe_allow_html=True,
    )
 
