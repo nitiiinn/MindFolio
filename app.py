@@ -617,6 +617,8 @@ else:
     
     if response.get("is_internet_search"):
      sources = ["Web Search (Groq Compound)"]
+    elif response.get("is_conversational"):
+     sources = []
      
     st.session_state.messages.append(
      {
