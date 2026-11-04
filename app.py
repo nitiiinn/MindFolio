@@ -616,7 +616,7 @@ else:
     )
     
     if response.get("is_internet_search"):
-     sources = ["Web Search (Groq Compound)"]
+     sources = ["Web Search"]
     elif response.get("is_conversational"):
      sources = []
      
