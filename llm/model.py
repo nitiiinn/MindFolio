@@ -5,11 +5,11 @@ This is the brain of the application. It decides WHICH AI model to use
 for EACH task (e.g., answering questions, generating quizzes, etc.).
 
 We use two AI providers:
-  - Groq  (fast, free tier) — for query rewriting, verification, fallback
-  - Mistral (accurate) — for Q&A, notes, quizzes, flashcards
+  - Groq  (fast, free tier) — for query rewriting, Q&A, verification, web search, fallback
+  - Mistral (accurate) — for notes, quizzes, flashcards
 
 The router also handles:
-  - Automatic fallback: if Mistral fails, it retries with Groq
+  - Automatic fallback: if a model fails, it retries with the task's fallback model
   - Answer verification: a second AI checks the first AI's answer for accuracy
 """
 
@@ -48,8 +48,10 @@ class ModelRoute:
     provider: str            # "groq" or "mistral"
     model_id: str            # The specific model name (e.g., "ministral-8b-2512")
     temperature: float = 0.3 # Higher = more creative, Lower = more factual
-    max_tokens: int | None = None     # Max length of the AI's response
+    max_tokens: int | None = None     # Max length of the AI's response (includes reasoning tokens)
     fallback_task: str | None = None  # If this model fails, try this task's model instead
+    reasoning_effort: str | None = None  # Groq reasoning models: "low"/"medium"/"high" (gpt-oss), "none" (qwen)
+    web_search: bool = False          # Enable Groq's built-in browser_search tool (gpt-oss only)
 
 
 # ── Task → Model Mapping ────────────────────────────────────────────────────
@@ -57,17 +59,20 @@ TASK_MODEL_ROUTES = {
     # Rewrites user questions into better search queries for the vector DB
     "query_rewriting": ModelRoute(
         provider="groq",
-        model_id="llama-3.1-8b-instant",
+        model_id="openai/gpt-oss-20b",
         temperature=0.0,
-        max_tokens=256,
+        max_tokens=1024,
+        reasoning_effort="low",
+        fallback_task="light_fallback",
     ),
 
     # High-accuracy model for understanding context and reasoning
     "core_qa": ModelRoute(
         provider="groq",
-        model_id="llama-3.3-70b-versatile",
+        model_id="openai/gpt-oss-120b",
         temperature=0.0,
-        max_tokens=1000,
+        max_tokens=2000,
+        reasoning_effort="low",
     ),
 
     # Generates Q&A flashcards from documents
@@ -97,36 +102,55 @@ TASK_MODEL_ROUTES = {
         fallback_task="feature_fallback",
     ),
 
-    # Checks if the Q&A answer is actually supported by the document
+    # Checks if the Q&A answer is actually supported by the document.
+    # A different model family from core_qa, so the check is independent
+    # (and it draws on its own Groq rate-limit bucket).
     "verifier_layer": ModelRoute(
         provider="groq",
-        model_id="meta-llama/llama-4-scout-17b-16e-instruct",
+        model_id="qwen/qwen3.8-27b",
         temperature=0.0,
         max_tokens=None,
+        reasoning_effort="none",  # keep thinking text out of the JSON reply
     ),
 
-    # Backup model — used when Mistral models fail
+    # Backup model — used when Mistral models fail.
+    # Kept under Groq's 8K tokens/minute free-tier limit.
     "feature_fallback": ModelRoute(
         provider="groq",
-        model_id="meta-llama/llama-4-scout-17b-16e-instruct",
+        model_id="openai/gpt-oss-120b",
         temperature=0.35,
-        max_tokens=8000,
+        max_tokens=4000,
+        reasoning_effort="low",
     ),
 
     # Summarizes chat history to save tokens for the main QA bot
     "history_summarization": ModelRoute(
         provider="groq",
-        model_id="llama-3.1-8b-instant",
+        model_id="openai/gpt-oss-20b",
         temperature=0.0,
-        max_tokens=500,
+        max_tokens=1000,
+        reasoning_effort="low",
+        fallback_task="light_fallback",
     ),
 
-    # Uses Groq's compound AI to perform web searches when context is missing
+    # Backup for the light tasks above — web searches are token-heavy and can
+    # exhaust gpt-oss-20b's daily quota, which would otherwise break every chat.
+    "light_fallback": ModelRoute(
+        provider="groq",
+        model_id="qwen/qwen3.8-27b",
+        temperature=0.0,
+        max_tokens=1000,
+        reasoning_effort="none",
+    ),
+
+    # Searches the web with Groq's browser_search tool when context is missing
     "internet_search": ModelRoute(
         provider="groq",
-        model_id="groq/compound",
+        model_id="openai/gpt-oss-20b",
         temperature=0.3,
         max_tokens=None,
+        reasoning_effort="low",
+        web_search=True,
     ),
 }
 
@@ -187,7 +211,7 @@ class StudyAssistantRouter:
             ) from exc
 
     def verify_answer(self, query: str, context: str, draft_answer: str, history_summary: str = "None") -> dict[str, Any]:
-        """Uses a strong factual model (Llama-3-70b or Scout) to verify the draft answer against the context.
+        """Uses a second model (from a different family than core_qa) to verify the draft answer against the context.
         
         Returns a dict containing:
         - answer: The corrected answer.
@@ -214,6 +238,10 @@ class StudyAssistantRouter:
             payload = {"model": route.model_id, "messages": messages, "temperature": temperature}
             if max_tokens is not None:
                 payload["max_completion_tokens"] = max_tokens
+            if route.reasoning_effort is not None:
+                payload["reasoning_effort"] = route.reasoning_effort
+            if route.web_search:
+                payload["tools"] = [{"type": "browser_search"}]
             response = client.chat.completions.create(**payload)
             return _extract_text(response.choices[0].message.content)
 
@@ -305,7 +333,7 @@ def answer_question(router, prompt, query: str, context: str, history_summary: s
                 )
                 verification["answer"] = internet_answer
                 verification["is_internet_search"] = True
-                verification["reason"] = "Answered using Groq Compound internet search because it was not in the documents but is related to the topic."
+                verification["reason"] = "Answered using web search because it was not in the documents but is related to the topic."
                 verification["hallucination_score"] = 0
             except Exception as e:
                 # If search fails, we'll just fall back to the draft answer

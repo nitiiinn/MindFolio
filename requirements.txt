@@ -31,3 +31,8 @@ mistralai
 # Utilities
 requests
 reportlab
+
+# API server for the React frontend
+fastapi==0.115.12  # newer releases require opentelemetry-api>=1.44, conflicting with the pins above
+uvicorn[standard]
+python-multipart

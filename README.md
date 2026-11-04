@@ -76,6 +76,24 @@ To start the main application:
 streamlit run app.py
 ```
 
+### Running the React Frontend
+
+The React UI (`frontend/`, Vite + React) talks to a FastAPI server (`server.py`) that wraps the same `ingestion/`, `retrieval/`, `llm/` and `generation/` modules.
+
+1. Start the API (from the project root, with the venv active):
+   ```bash
+   uvicorn server:app --reload --port 8000
+   ```
+2. In a second terminal, start the frontend:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+3. Open http://localhost:5173. In dev, Vite proxies `/api` to port 8000.
+
+For production, set `VITE_API_URL` (frontend) to the API's URL and `ALLOWED_ORIGINS` (API) to the frontend's URL.
+
 ## 🔮 Future Scope
 
 - Granular control over the complexity level of generated notes.

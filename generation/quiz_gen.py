@@ -57,9 +57,10 @@ def _parse_quiz(raw_text):
     
     for line in raw_text.split('\n'):
         line = line.strip()
-        if not line:
+        # Skip blanks and markdown separators like "---"
+        if not line or re.fullmatch(r'[-*_]{3,}', line):
             continue
-            
+
         # Match question start like "**Q1. text**" or "Q1. text"
         q_match = re.match(r'^\*?\*?Q\d+\.?\s*(.*?)\*?\*?$', line)
         if q_match:
@@ -75,8 +76,10 @@ def _parse_quiz(raw_text):
             if line.startswith('A)') or line.startswith('B)') or line.startswith('C)') or line.startswith('D)'):
                 current_q['options'].append(line)
             elif 'Correct Answer' in line or 'Correct' in line:
-                # Extract just the letter (A, B, C, D)
-                match = re.search(r'([A-D])', line)
+                # Extract just the letter (A, B, C, D). Look after the colon and
+                # require a standalone letter, so the "C" in "Correct" isn't matched.
+                answer_part = line.split(':', 1)[1] if ':' in line else line
+                match = re.search(r'\b([A-D])\b', answer_part)
                 if match:
                     current_q['correct'] = match.group(1)
             elif 'Explanation' in line:

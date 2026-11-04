@@ -68,14 +68,19 @@ def _parse_flashcards(raw_text):
 
     for line in lines:
         line = line.strip()
+        # Skip markdown separators like "---"
+        if re.fullmatch(r"[-*_]{3,}", line):
+            continue
+        # Drop leading bold markers so "**Q:** text" is read as "Q: text"
+        line = re.sub(r"^\*+\s*", "", line)
         if line.upper().startswith("Q:") or line.upper().startswith("Q :"):
             # Save previous card if exists
             if current_q and current_a:
                 cards.append({"question": current_q, "answer": current_a})
-            current_q = line.split(":", 1)[1].strip()
+            current_q = line.split(":", 1)[1].strip(" *")
             current_a = None
         elif line.upper().startswith("A:") or line.upper().startswith("A :"):
-            current_a = line.split(":", 1)[1].strip()
+            current_a = line.split(":", 1)[1].strip(" *")
         elif current_a is not None and line:
             # Continuation of answer
             current_a += " " + line
